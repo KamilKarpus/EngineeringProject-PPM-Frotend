@@ -1,0 +1,9 @@
+ul {
+    list-style-type: none;
+}
+.container{
+    background-color:#ebf0f2;
+    height: 100vh;
+}
+
+span::before {content: '\A'; white-space: pre;}
