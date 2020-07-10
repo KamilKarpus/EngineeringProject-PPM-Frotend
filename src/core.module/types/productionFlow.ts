@@ -1,3 +1,5 @@
+import { Interface } from "readline";
+
 export interface ProductionFlow {
     name: string;
     id: string;
@@ -5,3 +7,4 @@ export interface ProductionFlow {
     moveToTheNextPage : boolean;
     errorCode : number;
 }
+

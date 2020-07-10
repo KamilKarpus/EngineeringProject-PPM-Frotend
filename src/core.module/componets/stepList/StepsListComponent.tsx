@@ -6,9 +6,11 @@ export interface StepListElement{
     name: string;
 }
 export interface StepListState{
+    currentStep : number;
     steps: StepListElement[];
 }
 const initialState = {
+  currentStep: 1,
   steps:[
       {number: 1, name: "Utworzenie definicji"},
       {number: 2, name: "Utworzenie etapów"}    
@@ -22,7 +24,7 @@ export class StepList extends Component<{}, StepListState>{
           <div className="container">
             <ul>
             {this.state.steps.map(step =>(
-              <li>
+              <li key={step.number}>
               <div>
                 <span>
                   Krok {step.number} 
