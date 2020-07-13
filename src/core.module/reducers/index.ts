@@ -5,6 +5,7 @@ import { ProductionFlow } from "../types/productionFlow";
 import { productionFlowReducer } from "./productionFlowReducers";
 import { History, createBrowserHistory } from 'history';
 import { StepsState } from "../types/Step";
+import { stepReducer } from "./StepsReducers";
 
 
 
@@ -17,6 +18,7 @@ export type AppState = {
 
 const rootReducer = (history: History) => combineReducers({
     productionFlow : productionFlowReducer,
+    stepsState : stepReducer,
     router: connectRouter(history)
 });
 

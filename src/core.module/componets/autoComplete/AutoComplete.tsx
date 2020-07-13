@@ -10,6 +10,9 @@ import { LocationView } from "../../models/LocationView";
 
 type Props = {
     loadItems(locationName: string) : Promise<LocationView[]>;
+    updateLocation(LocationView: LocationView) : void;
+    valid: boolean;
+    invalid: boolean;
 }
 const AutoComplete : React.FC<Props> = (props) =>{
     const [isOpen, setOpen] = React.useState(false);
@@ -34,21 +37,25 @@ const AutoComplete : React.FC<Props> = (props) =>{
         setName(e.currentTarget.value);     
         getLocations();
     }
-
-
     return (
     <Dropdown isOpen={isOpen} toggle={toggle}>
         <DropdownToggle tag="div">
             <Input  
                   value={name}
                   onChange={updateName()}
+                  invalid={props.invalid}
+                  valid={props.valid}
             />
         </DropdownToggle>
         <DropdownMenu>
           {locations.length > 0 ? locations.map(p => (
             <Fragment>
               <DropdownItem header key={p.id} > 
-                    <div onClick={()=>{setName(p.name); setLocation(p); }}>                    
+                    <div onClick={()=>{
+                        setName(p.name); 
+                        setLocation(p); 
+                        props.updateLocation(p);
+                        }}>                    
                         {p.name}
                     </div>
               </DropdownItem>

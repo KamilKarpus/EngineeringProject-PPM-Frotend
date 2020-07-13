@@ -28,7 +28,7 @@ const AddFlow = () => {
   const moveToNextPage = ()=>{
     if(flow.moveToTheNextPage){
       dispatch(movedToNextPage());
-      history.push('/flow/1/steps');
+      history.push(`/flow/${flow.id}/steps`, {id: flow.id});
     }
   }
   moveToNextPage();

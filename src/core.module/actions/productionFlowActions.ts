@@ -24,7 +24,7 @@ export interface ErrorFlowAction{
 
 }
 export const addProductionFlow = (productionFlow : string) => async (
-        dispatch : Dispatch, history : History
+        dispatch : Dispatch
     ) => {
         dispatch({
             type: ADD_PRODUCTION_FLOW,
