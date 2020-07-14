@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './AddFlow.css';
 import { AppState } from '../../reducers';
 import { useSelector, useDispatch } from "react-redux";
@@ -34,7 +34,8 @@ const AddFlow = () => {
   moveToNextPage();
   
   return (
-  <div>
+  <div className="wrapper">
+    <div>
       <div className="content">
         <p className="header">Tworzenie procesu produkcyjnego</p>
         <Form method="POST"  onSubmit={handleSubmit}>
@@ -54,6 +55,7 @@ const AddFlow = () => {
             {ErrorMessages.getMessage(flow.errorCode)}
         </Alert>
       }
+    </div>
   </div>
   
   );

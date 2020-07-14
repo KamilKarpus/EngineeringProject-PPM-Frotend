@@ -1,13 +1,12 @@
 import React from 'react';
-import './styles.css';
 import { Provider } from "react-redux";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { configureStore } from './reducers';
 import { StepList } from './componets/stepList/StepsListComponent';
 import AddFlow from './componets/addFlow/AddFlow';
 import { Route, BrowserRouter as Router } from "react-router-dom";
 import AddSteps from './componets/addSteps/AddSteps';
 import { ErrorMessages } from './ErrorMessage';
+import './coreModule.css';
 
 const store = configureStore();
 const CoreModule = () => {
@@ -20,10 +19,8 @@ const CoreModule = () => {
         <StepList/>
       </div>
       <div className="content-container">
-        <div>
         <Route path="/flow" exact component={AddFlow} />
         <Route path="/flow/:id/steps" component={AddSteps} />
-        </div>
       </div>
     </div>
     </Router>

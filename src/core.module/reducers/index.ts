@@ -6,6 +6,7 @@ import { productionFlowReducer } from "./productionFlowReducers";
 import { History, createBrowserHistory } from 'history';
 import { StepsState } from "../types/Step";
 import { stepReducer } from "./StepsReducers";
+import { FlowView } from "../models/FlowView";
 
 
 
@@ -14,6 +15,7 @@ export const history = createBrowserHistory()
 export type AppState = {
     productionFlow : ProductionFlow;
     stepsState : StepsState;
+    flow: FlowView;
 }
 
 const rootReducer = (history: History) => combineReducers({

@@ -13,7 +13,7 @@ import { DaysField } from './fields/DaysField';
 import { PercentageField } from './fields/PercentageField';
 import { LocationField } from './fields/LocationField';
 import { useHistory } from 'react-router-dom';
-import { addStep } from '../../actions/StepsAction';
+import { addStep, getFlow } from '../../actions/StepsAction';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
 
@@ -81,7 +81,7 @@ const StepFormPopup : React.FC<Props> = (props) => {
     </div>
     <div className='popup_inner'>
       <div className="header">
-          Utwórz nowy krok
+          Utwórz nowy etap produkcji
            <a onClick={props.closePopup}> <AiFillCloseCircle className="close_buton" size="35"/> </a>
        </div>
        <Form className="form" onSubmit={handleSubmit}>
