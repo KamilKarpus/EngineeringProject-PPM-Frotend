@@ -1,13 +1,17 @@
 ul {
     margin:0 px;
     list-style-type: none;
+    padding: 0px;
 }
 .container{
     background-color:#ebf0f2;
     height: 100vh;
+    padding: 0px;
 }
 .active{
     background-color: green;
 }
-
+.element{
+    padding:10px;
+}
 span::before {content: '\A'; white-space: pre;}

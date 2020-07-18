@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect }  from 'react';
 import './AddFlow.css';
 import { AppState } from '../../reducers';
 import { useSelector, useDispatch } from "react-redux";
@@ -7,6 +7,8 @@ import { addProductionFlow, movedToNextPage } from '../../actions/productionFlow
 import { Button, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import { ErrorMessages } from '../../ErrorMessage';
+import LoadingSpinner from '../../../shared/components/Spinner';
+import { STEP_CHANGE } from '../../actions/currentStepActions';
 
 
 
@@ -25,6 +27,13 @@ const AddFlow = () => {
     setNewFlow("");
   };
 
+  useEffect(()=>{
+    dispatch({
+      type: STEP_CHANGE,
+      payload: 1
+    })
+  },[])
+
   const moveToNextPage = ()=>{
     if(flow.moveToTheNextPage){
       dispatch(movedToNextPage());
@@ -35,6 +44,10 @@ const AddFlow = () => {
   
   return (
   <div className="wrapper">
+        {
+            flow.isLoading &&
+                <LoadingSpinner message="Trwa tworzenie przepływu produkcji.."/>
+      }
     <div>
       <div className="content">
         <p className="header">Tworzenie procesu produkcyjnego</p>
@@ -50,8 +63,8 @@ const AddFlow = () => {
         </div>
       </Form>
     </div>
-      {flow.errorCode !==0 &&
-          <Alert color="danger">
+    {ErrorMessages.getMessage(flow.errorCode) !== "" &&
+        <Alert color="danger">
             {ErrorMessages.getMessage(flow.errorCode)}
         </Alert>
       }

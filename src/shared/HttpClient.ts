@@ -31,5 +31,18 @@ export class HttpClient{
         })
         return await result.json() as Promise<Response>;
     }
+    public async Put<Body>(url: string, body: Body){
+            await fetch(url, {
+                method: 'PUT',
+                body: JSON.stringify(body),
+                headers:{'Content-Type': 'application/json'}
+            }).then(async result=>{
+                if(!result.ok){
+                    const errorMessage = await result.json();
+                    console.log(errorMessage);
+                    throw new ErrorResponse(errorMessage.errorCode, errorMessage.message);
+                }
+            })
+    }
 
 }

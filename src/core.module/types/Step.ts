@@ -7,4 +7,6 @@ export interface StepsState{
     isAdded : boolean;
     flowView : FlowView,
     fetchNeeded : boolean,
+    errorCodeMain : number;
+    loadingMessage: string;
 }

@@ -21,7 +21,6 @@ export interface MovedToTheNextPageAction{
 export interface ErrorFlowAction{
     type: typeof ERROR_FLOW_ACTION,
     payload: number
-
 }
 export const addProductionFlow = (productionFlow : string) => async (
         dispatch : Dispatch

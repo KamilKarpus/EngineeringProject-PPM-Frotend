@@ -3,6 +3,7 @@ import { HttpClient } from "../../shared/HttpClient";
 import { AddNewStep } from "../models/AddNewStep";
 import { AddNewFlow } from "../models/AddNewFlow";
 import { FlowView } from "../models/FlowView";
+import { ChangeStepPostion } from "../models/ChangeStepPostion";
 
 export class ProductionFlowRepository{
     apiUrl : string = 'https://localhost:44343/api/administration';
@@ -16,5 +17,8 @@ export class ProductionFlowRepository{
     }
     async GetFlow(id: string) : Promise<FlowView>{
       return await this.httpClient.Get<FlowView>(this.apiUrl + `/${id}`);
+    }
+    async ChangeStepPostion(id: string, changeStep : ChangeStepPostion ) {
+      await this.httpClient.Put(this.apiUrl + `/${id}/stepsPosition`,changeStep);
     }
 }

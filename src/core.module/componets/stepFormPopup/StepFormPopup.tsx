@@ -13,7 +13,7 @@ import { DaysField } from './fields/DaysField';
 import { PercentageField } from './fields/PercentageField';
 import { LocationField } from './fields/LocationField';
 import { useHistory } from 'react-router-dom';
-import { addStep, getFlow } from '../../actions/StepsAction';
+import { addStep } from '../../actions/StepsAction';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
 

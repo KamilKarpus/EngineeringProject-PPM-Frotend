@@ -1,31 +1,34 @@
 import React from 'react';
 import { Component } from 'react';
-import './style.css';
+import {FaRegCircle } from 'react-icons/fa';
+import './stepList.css';
+import { AiFillCheckCircle } from 'react-icons/ai';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../reducers';
 export interface StepListElement{
     number: number;
     name: string;
 }
 export interface StepListState{
-    currentStep : number;
     steps: StepListElement[];
 }
 const initialState = {
-  currentStep: 1,
   steps:[
       {number: 1, name: "Utworzenie definicji"},
-      {number: 2, name: "Utworzenie etapów"}    
+      {number: 2, name: "Utworzenie etapów"},
+      {number: 3, name: "Podsumowanie"}    
   ]
 }
-export class StepList extends Component<{}, StepListState>{
-    public readonly state = initialState;
-    
-    render() {
+const StepList = () =>{
+        const state = initialState;
+        const currentNumber: number = useSelector((state: AppState) => state.currentStep);
         return (
           <div className="container">
             <ul>
-            {this.state.steps.map(step =>(
-              <li key={step.number}>
-              <div>
+            {state.steps.map(step =>(
+              <li key={step.number} className={step.number ===  currentNumber ? "active" : "" }>
+              <div className="element">
+                {step.number >= currentNumber ? <FaRegCircle/> : <AiFillCheckCircle/>}
                 <span>
                   Krok {step.number} 
                 </span>
@@ -38,5 +41,5 @@ export class StepList extends Component<{}, StepListState>{
             </ul>
           </div>
         );
-    }
 }
+export default StepList;

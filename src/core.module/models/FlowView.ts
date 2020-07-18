@@ -6,5 +6,6 @@ export interface FlowView {
     requiredDaysToFinish: number;
     statusName: string;
     statusId: number;
+    isValid : boolean;
     steps: Step[];
 }

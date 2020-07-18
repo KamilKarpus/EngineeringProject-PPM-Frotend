@@ -6,6 +6,8 @@ export class ErrorMessages{
         this.Errors[1010] = "Nazwa etapu musi być unikalna."
         this.Errors[1008] = "Pierwsza lokalizacja musi wspierać drukowanie."
         this.Errors[1007] = "Wybrana lokalizacja nie istnieje."
+        this.Errors[1004] = "Dodany etap musi posiadać wyższy procent realizacji niż poprzedni."
+        this.Errors[1003] = "Procent realizacji nie może być większy niż 100%";
     }
 
      static getMessage(errorCode : number) : string{
