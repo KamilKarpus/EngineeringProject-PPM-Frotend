@@ -85,4 +85,24 @@ export const changePosition = (flowId : string, stepId: string, stepNumber: numb
         });
 
 }
+export const finishFlow = (flowId : string) => async(
+    dispatch: Dispatch
+) =>{
+    await dispatch({
+        type: LOADING,
+        message: "Trwa zmiana status procesu produkcji..."
+    });
+    const repository = new ProductionFlowRepository();
+    await repository.FinishFlow(flowId)
+        .then(async p=>{
+        await dispatch({
+            type: FETCH_NEEDED
+        })
+    }).catch(async error =>{
+            await dispatch({
+                type: STEP_MODIFIED_ERROR,
+                payload:  error.errorCode
+            })
+        })
+}
 export type StepActions = AddStepAction | StepAddedAction | ErrorAction | FetchFlow | NeedToFetchAction | StepModifiedAction | LoadingAction;

@@ -45,7 +45,7 @@ const AddSteps = () => {
     setOpen(false);
   }
   const navigateToSummary = () =>{
-    history.push(`/flow/${history.location.state.id}/summary`);
+    history.push(`/flow/${history.location.state.id}/summary`, {id: history.location.state.id});
   }
   return (
     <div className="content_table">

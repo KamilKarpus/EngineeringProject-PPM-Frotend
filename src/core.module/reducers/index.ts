@@ -7,6 +7,7 @@ import { History, createBrowserHistory } from 'history';
 import { StepsState } from "../types/Step";
 import { stepReducer } from "./StepsReducers";
 import { currentStepReducer } from "./CurrentStepReducer";
+import { moduleReducer } from "./moduleReducer";
 
 
 
@@ -16,12 +17,14 @@ export type AppState = {
     productionFlow : ProductionFlow;
     stepsState : StepsState;
     currentStep : number;
+    menu: number;
 }
 
 const rootReducer = (history: History) => combineReducers({
     productionFlow : productionFlowReducer,
     stepsState : stepReducer,
     currentStep : currentStepReducer,
+    menu: moduleReducer,
     router: connectRouter(history)
 });
 

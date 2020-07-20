@@ -1,0 +1,10 @@
+.wrapper{
+    flex: 1 100% 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.button-style{
+    margin-right: 10px;
+}

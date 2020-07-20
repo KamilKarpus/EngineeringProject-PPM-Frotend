@@ -4,9 +4,12 @@ import { AddNewStep } from "../models/AddNewStep";
 import { AddNewFlow } from "../models/AddNewFlow";
 import { FlowView } from "../models/FlowView";
 import { ChangeStepPostion } from "../models/ChangeStepPostion";
+import { Environment } from "../../environment";
+import { Paggination } from "../../shared/model/Paggination";
+import { FlowShortView } from "../models/FlowShortView";
 
 export class ProductionFlowRepository{
-    apiUrl : string = 'https://localhost:44343/api/administration';
+    apiUrl : string = `${Environment.apiUrl}/administration`;
     httpClient : HttpClient = new HttpClient();
 
     async Add(flow : AddNewFlow): Promise<ResponseId> {
@@ -20,5 +23,11 @@ export class ProductionFlowRepository{
     }
     async ChangeStepPostion(id: string, changeStep : ChangeStepPostion ) {
       await this.httpClient.Put(this.apiUrl + `/${id}/stepsPosition`,changeStep);
+    }
+    async FinishFlow(id: string){
+      await this.httpClient.Put(this.apiUrl + `/${id}`, {statusId: 2});
+    }
+    async GetFlows(pageNumber : number, pageSize : number) : Promise<Paggination<FlowShortView>>{
+      return await this.httpClient.Get<Paggination<FlowShortView>>(this.apiUrl + `?PageNumber=${pageNumber}&PageSize=${pageSize}`);
     }
 }
