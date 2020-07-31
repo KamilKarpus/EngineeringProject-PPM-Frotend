@@ -9,6 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { ErrorMessages } from '../../ErrorMessage';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { STEP_CHANGE } from '../../actions/currentStepActions';
+import { MENU_CHANGE } from '../../actions/moduleActions';
 
 
 
@@ -32,6 +33,10 @@ const AddFlow = () => {
       type: STEP_CHANGE,
       payload: 1
     })
+    dispatch({
+      type: MENU_CHANGE,
+      payload: 1
+  })
   },[])
 
   const moveToNextPage = ()=>{

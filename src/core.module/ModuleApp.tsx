@@ -16,13 +16,14 @@ const ModuleApp = () =>{
     <Router>
     <div className="flex-container">
       <div className="steps">
-        {menu === 1 ?  <StepList/> : <SideMenu/>}
+        {menu == 1 &&  <StepList/>}
+        {menu == 2 && <SideMenu/>}
       </div>
       <div className="content-container">
         <Route path="/flow" exact component={AddFlow} />
         <Route path="/flow/:id/steps" component={AddSteps} />
         <Route path="/flow/:id/summary" component={StepSummary}/>
-        <Route path="/flowList" component={FlowList} />
+        <Route path="/flow/list" component={FlowList} />
       </div>
     </div>
     </Router>);

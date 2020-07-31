@@ -1,11 +1,19 @@
 import React from 'react';
+import { Button } from 'reactstrap';
+import { IoMdAddCircle } from 'react-icons/io';
+import { useHistory } from 'react-router-dom';
 
 const SideMenu = () =>{
+    const history = useHistory();
+    const moveToPage = () =>{
+        history.push('/flow');
+        
+    }
     return (
         <div className="container">
         <ul>
             <li>
-                Utwórz nowy krok
+                <Button color="link" onClick={()=>moveToPage()}> <IoMdAddCircle/> Utwórz nowy krok</Button>
             </li>
         </ul>
       </div>

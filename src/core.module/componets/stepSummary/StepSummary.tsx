@@ -43,6 +43,9 @@ const StepSummary = () =>{
     if(answer){
         dispatch(finishFlow(history.location.state.id));
         setAnswer(false);
+        if(state.flowView.isValid){
+            history.push('/flow/list');
+        }
     }
     return(
         <div className="wrapper">
