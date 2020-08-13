@@ -4,14 +4,25 @@ import { MENU_CHANGE } from '../../actions/moduleActions';
 import { ProductionFlowRepository } from '../../repositories/productionFlowRepository';
 import { PaginationList } from '../../../shared/model/Pagination';
 import { FlowShortView } from '../../models/FlowShortView';
-import { Table, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import { Table } from 'reactstrap';
 import './flowListComponent.css';
 import { isNullOrUndefined } from 'util';
+import PagePagination from '../../../shared/components/paginations/Pagination';
+
+const initial : PaginationList<FlowShortView> ={
+    currentPage: 0,
+    totalPages: 0,
+    pageSize: 0,
+    totalCount: 0,
+    items: [],
+    hasPrevious: false,
+    hasNext: false,
+}
 
 const FlowList = () =>{
     const dispatch = useDispatch();
     const repository = new ProductionFlowRepository();
-    const [flows, setFlows] = React.useState<PaginationList<FlowShortView>>();
+    const [flows, setFlows] = React.useState<PaginationList<FlowShortView>>(initial);
     const [pagination, setPagination] = React.useState<number[]>();
     const [currentPage, setPage] = React.useState<number>(1);
      useEffect(()=>{
@@ -66,29 +77,8 @@ const FlowList = () =>{
                 ))}
                 </thead>
             </Table>
-            <div>
-            <Pagination size="lg">
-            <PaginationItem>
-                <PaginationLink first onClick={()=>{loadPage(1)}} />
-            </PaginationItem>
-            <PaginationItem>
-                <PaginationLink previous onClick={()=>{loadPrevious()}} />
-            </PaginationItem>
-            {pagination?.map(p=>(
-                <PaginationItem active={p === flows?.currentPage}>
-                    <PaginationLink onClick={()=>{loadPage(p);}}>
-                               {p}
-                    </PaginationLink>
-                </PaginationItem>
-            ))}
-            <PaginationItem>
-                <PaginationLink next onClick={()=>{loadNext()}} />
-            </PaginationItem>
-            <PaginationItem>
-                <PaginationLink last onClick={()=>{loadPage(flows!.totalPages)}} />
-            </PaginationItem>
-            </Pagination>
-            </div>
+            <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={flows.totalCount}
+            activePage = {flows.currentPage} paginations={pagination as number[]} />
         </div>
     );
 }

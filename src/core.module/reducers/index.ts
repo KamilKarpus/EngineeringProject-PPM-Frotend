@@ -8,7 +8,6 @@ import { StepsState } from "../types/Step";
 import { stepReducer } from "./StepsReducers";
 import { currentStepReducer } from "./CurrentStepReducer";
 import { moduleReducer } from "./moduleReducer";
-import { MenuState } from "../types/MenuState";
 
 
 

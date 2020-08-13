@@ -1,0 +1,36 @@
+.popup {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    padding-top: 100px;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .popup_inner {
+      background-color: #fefefe;
+      margin: auto;
+      width: 50%;
+    }
+  .header{
+      background-color:#8981db;
+      height: 40px;
+      padding: 5px;
+      color:white;
+      
+  }
+  .form{
+    padding:10px;
+  }
+  .close_buton{
+      float: right;
+      cursor: pointer;
+      padding: 3px;
+  }
+  .error_info{
+    margin-left: 5px;
+  }

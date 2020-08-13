@@ -1,0 +1,13 @@
+.flex-container {
+  display: flex;
+  justify-content: left;
+}
+
+.menu-left {
+  display: flex;
+  width:15%;
+}
+.content-container {
+  display: flex;
+  width: 80%;
+}
