@@ -26,7 +26,7 @@ const StepList = () =>{
           <div className="container">
             <ul>
             {state.steps.map(step =>(
-              <li key={step.number} className={step.number ===  currentNumber ? "active" : "" }>
+              <li key={step.number} className={step.number ===  currentNumber ? "active-step" : "" }>
               <div className="element">
                 {step.number >= currentNumber ? <FaRegCircle/> : <AiFillCheckCircle/>}
                 <span>

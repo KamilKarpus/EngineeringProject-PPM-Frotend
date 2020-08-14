@@ -8,6 +8,8 @@ import PagePagination from '../../shared/components/paginations/Pagination';
 import { OrderState } from '../types/Order';
 import { useSelector } from 'react-redux';
 import { AppState } from '../reducers';
+import SideMenu from '../componets/sideMenu/SideMenu';
+import { useHistory } from 'react-router-dom';
 const initial : PaginationList<OrderShortView> ={
     currentPage: 0,
     totalPages: 0,
@@ -19,6 +21,7 @@ const initial : PaginationList<OrderShortView> ={
 }
 
 const OrdersPage = () =>{
+    const history = useHistory();
     const repository = new OrdersRepository();
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
@@ -68,6 +71,11 @@ const OrdersPage = () =>{
         });
         }
     }
+
+    const navigateToOrder = (orderId : string)=>{
+        history.push(`/orders/${orderId}/`, {id: orderId});
+    }
+
     const loadNext = ()=>{
         loadPage(currentPage + 1)
     }
@@ -76,35 +84,42 @@ const OrdersPage = () =>{
     }
 
     return(
-        <div className="list">
-            <Table>
-                <thead>
-                    <tr>
-                        <th>Nazwa Firmy</th>
-                        <th>Numer Zamówienia</th>
-                        <th>Opis</th>
-                    </tr>
-                </thead>
-                {orders?.items.map(order =>(
-                    <tr key={order.companyName}>
-                        <td scope="row">
-                            {order.companyName}
-                        </td>
-                        <td scope="row">
-                            {order.orderNumber}/{order.orderYear}
-                        </td>
-                        <td>
-                            {order.description}
-                        </td>
-                    </tr>
-                    
-                ))}
-            </Table>
-            <div className="d-flex justify-content-center">
-                <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={orders.totalCount}
-                activePage = {orders.currentPage} paginations={pagination as number[]}  />
+        <div className="flex-container">
+        <div className="menu-left">
+            <SideMenu/>
+        </div>
+        <div className="content-container">
+            <div className="list">
+                <Table>
+                    <thead>
+                        <tr>
+                            <th>Nazwa Firmy</th>
+                            <th>Numer Zamówienia</th>
+                            <th>Opis</th>
+                        </tr>
+                    </thead>
+                    {orders?.items.map(order =>(
+                        <tr key={order.id} onClick={()=>{navigateToOrder(order.id)}}>
+                            <td scope="row">
+                                {order.companyName}
+                            </td>
+                            <td scope="row">
+                                {order.orderNumber}/{order.orderYear}
+                            </td>
+                            <td>
+                                {order.description}
+                            </td>
+                        </tr>
+                        
+                    ))}
+                </Table>
+                <div className="d-flex justify-content-center">
+                    <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={orders.totalCount}
+                    activePage = {orders.currentPage} paginations={pagination as number[]}  />
+                </div>
             </div>
         </div>
+        </div>    
     )
 }
 

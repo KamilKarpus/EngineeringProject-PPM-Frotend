@@ -1,19 +1,15 @@
 import React from 'react';
 import OrdersPage from './page/OrderPage';
-import SideMenu from './componets/sideMenu/SideMenu';
-
+import { Route, BrowserRouter as Router } from "react-router-dom";
+import OrderInfoPage from './page/orderInfo/OrderInfoPage';
 const ModuleApp = () =>{
     return(
+        <Router>
         <div>
-            <div className="flex-container">
-            <div className="menu-left">
-                <SideMenu/>
-            </div>
-            <div className="content-container">
-                <OrdersPage/>
-            </div>
-            </div>
+            <Route path="/orders" exact component={OrdersPage} />
+            <Route path="/orders/:id" exact component={OrderInfoPage} />
         </div>
+        </Router>
     )
 };
 
