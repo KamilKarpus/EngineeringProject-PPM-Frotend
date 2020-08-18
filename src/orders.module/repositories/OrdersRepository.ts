@@ -5,6 +5,7 @@ import { AddOrder } from "../models/AddOrder";
 import { OrderShortView } from "../models/OrderShortView";
 import { PaginationList } from "../../shared/model/Pagination";
 import { OrderView } from "../models/OrderView";
+import { AddPackage } from "../models/AddPackage";
 
 export class OrdersRepository{
 
@@ -19,6 +20,10 @@ export class OrdersRepository{
     }
     async GetOrder(orderId : string) : Promise<OrderView>{
         return await this.httpClient.Get<OrderView>(this.apiUrl + `/${orderId}`);
+    }
+
+    async AddPackage(orderId : string, newPackage: AddPackage) : Promise<ResponseId>{
+        return await this.httpClient.Post<AddPackage, ResponseId>(this.apiUrl + `/${orderId}/package`, newPackage);
     }
     
 }

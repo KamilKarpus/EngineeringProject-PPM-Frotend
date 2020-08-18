@@ -1,4 +1,4 @@
-import { OrderActions, ADD_ORDER, ORDER_ADDED } from "../actions/OrderActions";
+import { OrderActions, ADD_ORDER, ORDER_ADDED, ADD_PACKAGE, PACKAGE_ADDED } from "../actions/OrderActions";
 import { OrderState } from "../types/Order";
 const initial = {
     isLoading : false,
@@ -18,6 +18,19 @@ export function orderReducer(state: OrderState = initial, action : OrderActions)
             return {
                 fetchNeeded : true,
                 isLoading: false, 
+            }
+        }
+        case ADD_PACKAGE:{
+            return{
+                ...state,
+                isLoading:true
+            }
+        }
+        case PACKAGE_ADDED:{
+            return{
+                ...state,
+                isLoading: false, 
+                fetchNeeded: true
             }
         }
         default:{

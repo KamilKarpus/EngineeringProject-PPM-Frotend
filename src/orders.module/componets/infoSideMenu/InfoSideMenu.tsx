@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import { IoMdAddCircle } from 'react-icons/io';
-import EditOrder from '../editOrder/EditOrder';
 import './InfoSideMenu.css';
+import EditPackage from '../editPackage/EditPackage';
+import { useHistory } from 'react-router-dom';
 const InfoSideMenu = () =>{
     const [isOpen, setOpen] = React.useState(false);
     const openPopup = () =>{
@@ -14,7 +15,7 @@ const InfoSideMenu = () =>{
     return(
     <div className="container">
           {
-                isOpen === true && <EditOrder closePopup={closePopup}/>
+                isOpen === true && <EditPackage closePopup={closePopup}/>
             }
     <ul>
         <li>
