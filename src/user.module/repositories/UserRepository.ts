@@ -4,10 +4,15 @@ import { PaginationList } from "../../shared/model/Pagination";
 import UserShortModel from "../models/UserShortModel";
 import { AddUser } from "../models/AddUserModule";
 import { ResponseId } from "../models/ResponseId";
+import { IUserRepository } from "./IUserRepository";
 
-export default class UserRepository{
+export default class UserRepository implements IUserRepository{
     private apiUrl : string = `${Environment.apiUrl}/users`;
-    private httpClient : HttpClient = new HttpClient();
+    private httpClient : HttpClient
+
+    constructor(httpClient : HttpClient) {
+        this.httpClient = httpClient;
+    }
 
     async GetList(pageNumber : number, pageSize : number) : Promise<PaginationList<UserShortModel>>{
         return await this.httpClient.Get<PaginationList<UserShortModel>>(this.apiUrl + `?PageNumber=${pageNumber}&PageSize=${pageSize}`);
@@ -16,3 +21,4 @@ export default class UserRepository{
         return this.httpClient.Post<AddUser, ResponseId>(this.apiUrl, user);
     } 
 } 
+

@@ -13,7 +13,6 @@ const SideMenu = () =>{
       const closePopup = () =>{
           setOpen(!isOpen);
       };
-      console.log(isOpen);
     return(
     <div className="container">
           {

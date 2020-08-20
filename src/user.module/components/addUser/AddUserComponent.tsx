@@ -1,24 +1,33 @@
-import React, { useEffect } from 'react';
+import React, { useEffect} from 'react';
 import LoadingSpinner from '../../../shared/components/Spinner';
-import { UsersState } from '../../types/User';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { AppState } from '../../reducers';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormFeedback, Input, Col, FormGroup, Label } from 'reactstrap';
 import { StringField } from './fields/StringField';
 import { EmailField } from './fields/EmailField';
 import { PasswordField } from './fields/PasswordField';
-import { UserDispatcher } from '../../reducers/UserDispatcher';
-import UserRepository from '../../repositories/UserRepository';
-type Props = {
+import { AddUser } from '../../models/AddUserModule';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { addUserAsync } from '../../repositories/thunk-actions/UserActions';
+
+interface StateProps {
+    isLoading : boolean;
+    fetchNeeded : boolean;
+}
+
+interface DispatchProps {
+    addUser(login: string, password: string, firstName: string, lastName: string,
+        jobPosition: string) : void;
+}
+interface OwnProps {
     closePopup() : void;
     isOpen : boolean;
 }
+
+type Props = OwnProps & DispatchProps & StateProps;
 const AddUserComponent = (props: Props) =>{
     const {isOpen} = props;
-    const dispatch = useDispatch();
-    const repository = new UserRepository();
-    const dispatcher = new UserDispatcher(dispatch, repository);
-    const state: UsersState = useSelector((state: AppState) => state.users);
     const [firstName, setFirstName] = React.useState<StringField>(StringField.initial);
     const [lastName, setLastName] = React.useState<StringField>(StringField.initial);
     const [jobPosition, setJobPosition] = React.useState<StringField>(StringField.initial);
@@ -26,10 +35,10 @@ const AddUserComponent = (props: Props) =>{
     const [password, setPassword] = React.useState<PasswordField>(PasswordField.initial);
 
     useEffect(()=>{
-        if(state.fetchNeeded === true){
+        if(props.fetchNeeded === true){
             props.closePopup();
         }
-    },[state.fetchNeeded]);
+    },[props.fetchNeeded]);
     const updateEmail = () => (e: React.ChangeEvent<HTMLInputElement>) =>{
         e.preventDefault();
         let field = EmailField.create(e.target.value);
@@ -64,15 +73,14 @@ const AddUserComponent = (props: Props) =>{
         setJobPosition(StringField.create(jobPosition.value));
         if(email.valid() && password.valid() && firstName.valid() && 
             lastName.valid() && jobPosition.valid()){
-                console.log("test");
-                dispatcher.addNewUser(email.value, password.value, 
-                    firstName.value, lastName.value, jobPosition.value);
+                props.addUser(email.value, password.value, 
+                         firstName.value, lastName.value, jobPosition.value);
         }
         }
     return (
         <Modal isOpen={isOpen} toggle={props.closePopup} size='lg'>
             {
-                state.isLoading && <LoadingSpinner message="Trwa dodawanie nowego użytkownika"/>
+                props.isLoading && <LoadingSpinner message="Trwa dodawanie nowego użytkownika"/>
             }
         <Form onSubmit={handleSubmit}>
             <ModalHeader toggle={props.closePopup}>Dodaj nowego użytkownika</ModalHeader>
@@ -151,4 +159,26 @@ const AddUserComponent = (props: Props) =>{
       </Modal>
     )
 }
-export default AddUserComponent;
+
+
+
+const mapDispatch = (
+    dispatch: ThunkDispatch<any, any, AnyAction>
+)=> {
+    return{
+    addUser: (login: string, password: string, firstName: string, lastName: string,
+        jobPosition: string) => (
+            dispatch(addUserAsync(new AddUser(login, password, firstName, lastName, jobPosition)))
+        )
+    }
+  }
+  const mapStateToProps = (store: AppState) => {
+    return {
+        isLoading: store.users.isLoading,
+        fetchNeeded: store.users.fetchNeeded
+    };
+  };
+export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(AddUserComponent)

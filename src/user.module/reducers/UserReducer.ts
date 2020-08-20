@@ -5,6 +5,15 @@ import { UsersState } from "../types/User";
 const initial = {
     isLoading : false,
     fetchNeeded : false,
+    users: {
+        currentPage: 0,
+        totalPages: 0,
+        pageSize: 0,
+        totalCount: 0,
+        items: [],
+        hasPrevious: false,
+        hasNext: false,
+    }
 }
 
 export function usersReducer(state: UsersState = initial, action : UsersActions){

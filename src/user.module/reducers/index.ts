@@ -4,9 +4,15 @@ import { connectRouter } from "connected-react-router";
 import { History, createBrowserHistory } from 'history';
 import { UsersState } from "../types/User";
 import { usersReducer } from "./UserReducer";
+import UserRepository from "../repositories/UserRepository";
+import { HttpClient } from "../../shared/HttpClient";
 
 
 export const history = createBrowserHistory()
+
+
+const httpClient = new HttpClient();
+const userRepository = new UserRepository(httpClient);
 
 export type AppState = {
     users: UsersState
@@ -17,6 +23,6 @@ const rootReducer = (history: History) => combineReducers({
 });
 
 export function configureStore(): Store {
-    const store = createStore(rootReducer(history), undefined, applyMiddleware(thunk.withExtraArgument(history)));
+    const store = createStore(rootReducer(history), undefined, applyMiddleware(thunk.withExtraArgument(userRepository)));
     return store;
   }

@@ -1,27 +1,42 @@
 import React, { useEffect } from 'react';
 import SideMenu from '../components/sideMenu/SideMenu';
-import UserRepository from '../repositories/UserRepository';
 import UserShortModel from '../models/UserShortModel';
 import { PaginationList } from '../../shared/model/Pagination';
 import { isNullOrUndefined } from 'util';
 import UserList from '../components/userList/UserList';
 import LoadingSpinner from '../../shared/components/Spinner';
-import { useSelector, useDispatch } from 'react-redux';
-import { UsersState } from '../types/User';
 import { AppState } from '../reducers';
-import { UserDispatcher } from '../reducers/UserDispatcher';
+import { ThunkDispatch, ThunkAction } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { fetchUserList } from '../repositories/thunk-actions/UserActions';
+import { connect } from 'react-redux';
+type ThunkResult<R> = ThunkAction<R, AppState, undefined, AnyAction>;
 
-const UsersPage = () =>{
-    const repository = new UserRepository();
-    const dispatch = useDispatch();
-    const dispatcher = new UserDispatcher(dispatch, repository);
+interface StateProps {
+    isLoading : boolean;
+    fetchNeeded : boolean;
+}
+
+interface DispatchProps {
+    getUserList(pageNumber : number , pageSize : number) : Promise<PaginationList<UserShortModel>>
+}
+
+interface OwnsProp {
+
+}
+
+type Props = DispatchProps & StateProps;
+
+
+const UsersPage = (props : Props) =>{
+
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
     const [users, setUsers] = React.useState<PaginationList<UserShortModel>>();
-    const state: UsersState = useSelector((state: AppState) => state.users);
     useEffect(()=>{
-        dispatcher.getUserList(1, 10)
+        props.getUserList(1, 10)
         .then(result => {
+            console.log(result);
             setUsers(result);
             setPage(1);
             generatePagination(result);
@@ -29,15 +44,15 @@ const UsersPage = () =>{
     },[]);
 
     useEffect(()=>{
-        if(state.fetchNeeded === true){
-            dispatcher.getUserList(1, 10)
+        if(props.fetchNeeded === true){
+            props.getUserList(1, 10)
             .then(result => {
                 setUsers(result);
                 setPage(1);
                 generatePagination(result);
             });
         }
-    },[state.fetchNeeded]);
+    },[props.fetchNeeded]);
 
     const generatePagination = (result : PaginationList<UserShortModel>) => {
         let pagginationElements = [];
@@ -52,7 +67,7 @@ const UsersPage = () =>{
     const loadPage = (page: number) =>{
         if(page >= 1 && page <= users!.totalPages) 
         {
-        dispatcher.getUserList(1, 10)
+        props.getUserList(page, 10)
         .then(result => {
             setUsers(result);
             setPage(page);
@@ -62,9 +77,11 @@ const UsersPage = () =>{
     }
 
     const loadNext = ()=>{
+        console.log("next");
         loadPage(currentPage + 1)
     }
     const loadPrevious = ()=>{
+        console.log("before");
         loadPage(currentPage - 1);
     }
     return(
@@ -82,5 +99,23 @@ const UsersPage = () =>{
         </div>    
     );
 }
+const mapDispatch = (
+    dispatch: ThunkDispatch<AppState, any, AnyAction>
+)=> {
+    return{
+        getUserList: (pageNumber : number , pageSize : number) => (
+            dispatch(fetchUserList(pageSize, pageNumber)))
 
-export default UsersPage;
+  }
+}
+  const mapStateToProps = (store: AppState) => {
+    return {
+        isLoading: store.users.isLoading,
+        fetchNeeded: store.users.fetchNeeded
+    };
+  };
+export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(UsersPage);
+
