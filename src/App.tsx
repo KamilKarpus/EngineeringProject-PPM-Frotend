@@ -6,6 +6,7 @@ import CoreModule from './core.module/CoreModule';
 import LocationModule from './location.module/LocationModule';
 import OrdersModule from './orders.module/OrdersModule';
 import AppNavbar from './shared/components/appNavBar/AppNavBar';
+import UsersModule from './user.module/UsersModule';
 
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
       <Route Route path="/flow" exact component={CoreModule} />
       <Route Route path="/locations" exact component={LocationModule}/>
       <Route Route path="/orders" exact component={OrdersModule}/>
+      <Route Route path="/users" exact component={UsersModule}/>
     </Router>
   );
 };

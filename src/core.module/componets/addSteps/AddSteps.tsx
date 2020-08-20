@@ -64,7 +64,7 @@ const AddSteps = () => {
       </div>
       <div>
         {
-          isOpen ? <StepFormPopup closePopup={closePopup} /> : null
+          isOpen && <StepFormPopup closePopup={closePopup} /> 
         }
       </div>
       <Table striped>
