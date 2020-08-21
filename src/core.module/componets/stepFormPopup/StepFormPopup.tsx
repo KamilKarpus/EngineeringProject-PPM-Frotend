@@ -1,25 +1,39 @@
 import React from 'react';
 import './style.css';
-import { AiFillCloseCircle } from "react-icons/ai";
-import { Form, FormGroup, Label, Input, Button, FormFeedback, Alert} from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, FormFeedback, Alert, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import AutoComplete from '../autoComplete/AutoComplete';
 import { LocationView } from '../../models/LocationView';
-import { LocationsRepository } from '../../repositories/LocationRepository';
-import { StepsState } from '../../types/Step';
-import { AppState } from '../../reducers';
-import { useSelector, useDispatch } from 'react-redux';
 import { NameField } from './fields/NameField';
 import { DaysField } from './fields/DaysField';
 import { PercentageField } from './fields/PercentageField';
 import { LocationField } from './fields/LocationField';
 import { useHistory } from 'react-router-dom';
-import { addStep } from '../../actions/StepsAction';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
+import { connect } from 'react-redux';
+import { AppState } from '../../reducers';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { addStepAsync } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
+import { fetchLocations } from '../../repositories/Thunk-Actions/LocationsThunk-Actions';
 
-type Props = {
-    closePopup() : void
-};
+interface StateProps{
+    isLoading: boolean;
+    isAdded: boolean;
+    errorCode: number;
+  }
+  interface DispatchProps{
+    addStep(name: string, days: number, locationId: string, percentage: number, flowId : string) : void;
+    getLocations(locationName: string ) : Promise<LocationView[]>; 
+  }
+  
+  interface OwnProps {
+    closePopup() : void;
+    isOpen : boolean;
+  };
+
+type Props = StateProps & DispatchProps & OwnProps;
+
 const nameFieldInitial = new NameField("");
 const daysFieldInitial = new DaysField(0);
 const percentageFieldInitial = new PercentageField(0);
@@ -27,13 +41,12 @@ const locationFieldInitial = new LocationField(new LocationView("",""));
 
 const StepFormPopup : React.FC<Props> = (props) => {
 
-    const state: StepsState = useSelector((state: AppState) => state.stepsState);
     const [nameField, setNameField] = React.useState<NameField>(nameFieldInitial);  
     const [daysField, setDaysField] = React.useState<DaysField>(daysFieldInitial);
     const [percentageField, setPercentageField] = React.useState<PercentageField>(percentageFieldInitial);
     const [locationField, setLocationField] = React.useState<LocationField>(locationFieldInitial);
     const history = useHistory();
-    const dispatch = useDispatch();
+    
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         nameField.validate();
@@ -41,15 +54,14 @@ const StepFormPopup : React.FC<Props> = (props) => {
         percentageField.validate();
         locationField.validate();
         if(!locationField.hasError && !daysField.hasError && !nameField.hasError && !percentageField.hasError){
-            dispatch(addStep(nameField.value, daysField.value, locationField.value.id, percentageField.value, history.location.state.id));
+            props.addStep(nameField.value, daysField.value, locationField.value.id, percentageField.value, history.location.state.id);
         }
       };
-    if(state.isAdded){
+    if(props.isAdded){
         props.closePopup();
     }
     const loadItems = (name : string) : Promise<LocationView[]> =>{
-        const repository = new LocationsRepository();
-        return repository.GetLocations(name);
+        return props.getLocations(name);
     }
     const updateNameField = () => (e: React.ChangeEvent<HTMLInputElement>) => {
         const newField = new NameField(e.target.value);
@@ -72,19 +84,13 @@ const StepFormPopup : React.FC<Props> = (props) => {
         setLocationField(newField);
     }
   return (
-    <div className='popup'>
-    <div>
+    <Modal isOpen={props.isOpen} toggle={props.closePopup} size='lg'>
     {
-            state.isLoading &&
-                <LoadingSpinner message="Trwa dodawania nowego etapu produkcji..."/>
+        props.isLoading && <LoadingSpinner message="Trwa dodawanie nowego kroku..."/>
     }
-    </div>
-    <div className='popup_inner'>
-      <div className="header">
-          Utwórz nowy etap produkcji
-           <a onClick={props.closePopup}> <AiFillCloseCircle className="close_buton" size="35"/> </a>
-       </div>
-       <Form className="form" onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
+        <ModalHeader toggle={props.closePopup}>Nowa paczka</ModalHeader>
+        <ModalBody>
             <FormGroup >
                 <Label for="name">Nazwa nowego kroku:</Label>
                 <Input 
@@ -148,19 +154,44 @@ const StepFormPopup : React.FC<Props> = (props) => {
                     valid={!locationField.hasError && locationField.hasValue()} />
             </FormGroup>
             <FormGroup>
-            {ErrorMessages.getMessage(state.errorCode) !== "" &&
+            {ErrorMessages.getMessage(props.errorCode) !== "" &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(state.errorCode)}
+                    {ErrorMessages.getMessage(props.errorCode)}
                 </Alert>
             }
             </FormGroup>
-            <FormGroup>
-                <Button color="secondary">Dodaj</Button>
-            </FormGroup>
-        </Form>
-    </div>
-  </div>
+            </ModalBody>
+              <ModalFooter>
+                <Button color="primary">Zapisz</Button>{' '}
+                <Button color="secondary" onClick={props.closePopup}>Anuluj</Button>
+              </ModalFooter>
+          </Form>
+        </Modal>
   )
 };
+const mapDispatch = (
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  )=> {
+    return{
+        addStep: (name: string, days: number, locationId: string, percentage: number, flowId : string)  => (
+            dispatch(addStepAsync(name, days, locationId, percentage, flowId))
+        ),
+        getLocations: (locationName: string ) =>(
+            dispatch(fetchLocations(locationName))
+        )
+    }
+  }
+  
+  const mapStateToProps = (store: AppState) => {
+    return {
+        
+        isLoading: store.stepsState.isLoading,
+        isAdded: store.stepsState.isAdded,
+        errorCode: store.stepsState.errorCode
+    };
+  };
+  export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(StepFormPopup)
 
-export default StepFormPopup;

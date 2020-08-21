@@ -1,13 +1,22 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { MENU_CHANGE } from '../../actions/moduleActions';
-import { ProductionFlowRepository } from '../../repositories/productionFlowRepository';
 import { PaginationList } from '../../../shared/model/Pagination';
 import { FlowShortView } from '../../models/FlowShortView';
 import { Table } from 'reactstrap';
 import './flowListComponent.css';
 import { isNullOrUndefined } from 'util';
 import PagePagination from '../../../shared/components/paginations/Pagination';
+import { connect } from 'react-redux';
+import { fetchFlows } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+
+
+interface DispatchProps{
+    menuChange() : void;
+    getFlows(pageNumber : number, pageSize : number) : Promise<PaginationList<FlowShortView>>
+  
+  }
 
 const initial : PaginationList<FlowShortView> ={
     currentPage: 0,
@@ -18,19 +27,15 @@ const initial : PaginationList<FlowShortView> ={
     hasPrevious: false,
     hasNext: false,
 }
+type Props = DispatchProps;
 
-const FlowList = () =>{
-    const dispatch = useDispatch();
-    const repository = new ProductionFlowRepository();
+const FlowList : React.FC<Props> = (props) =>{
     const [flows, setFlows] = React.useState<PaginationList<FlowShortView>>(initial);
     const [pagination, setPagination] = React.useState<number[]>();
     const [currentPage, setPage] = React.useState<number>(1);
      useEffect(()=>{
-        dispatch({
-            type: MENU_CHANGE,
-            payload: 2
-        })
-        repository.GetFlows(1, 12)
+        props.menuChange();
+        props.getFlows(1, 12)
         .then(result => {
             setFlows(result);
             setPage(1);
@@ -50,7 +55,7 @@ const FlowList = () =>{
     const loadPage = (page: number) =>{
         if(page >= 1 && page <= flows!.totalPages) 
         {
-        repository.GetFlows(page, 12)
+        props.getFlows(page, 12)
         .then(result => {
             setFlows(result);
             setPage(page);
@@ -82,6 +87,25 @@ const FlowList = () =>{
         </div>
     );
 }
+const mapDispatch = (
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  )=> {
+    return{
+        getFlows:(pageNumber : number, pageSize : number) =>(
+            dispatch(fetchFlows(pageNumber, pageSize))
+        ),
+        menuChange:()=>(
+          dispatch({
+            type: MENU_CHANGE,
+            payload: 2
+        })
+        ),
+    }
+  }
+  
 
-export default FlowList;
+  export default connect(
+    null,
+    mapDispatch
+  )(FlowList)
 

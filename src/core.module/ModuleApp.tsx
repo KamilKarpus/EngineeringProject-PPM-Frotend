@@ -20,10 +20,10 @@ const ModuleApp = () =>{
         {menu == 2 && <SideMenu/>}
       </div>
       <div className="content-container">
-        <Route path="/flow" exact component={AddFlow} />
-        <Route path="/flow/:id/steps" component={AddSteps} />
-        <Route path="/flow/:id/summary" component={StepSummary}/>
-        <Route path="/flow/list" component={FlowList} />
+        <Route path="/flowadd" exact component={AddFlow} />
+        <Route path="/flowadd/:id/steps" component={AddSteps} />
+        <Route path="/flowadd/:id/summary" component={StepSummary}/>
+        <Route path="/flow" component={FlowList} />
       </div>
     </div>
     </Router>);

@@ -1,16 +1,33 @@
 import React, { useEffect } from 'react';
-import { STEP_CHANGE } from '../../actions/currentStepActions';
-import { useDispatch, useSelector } from 'react-redux';
-import { StepsState } from '../../types/Step';
-import { AppState } from '../../reducers';
 import { Button, Alert } from 'reactstrap';
 import './StepSummary.css';
 import { useHistory } from 'react-router-dom';
 import AlertComponent from '../../../shared/components/alerts/AlertComponent';
-import { finishFlow, getFlow } from '../../actions/StepsAction';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
-const StepSummary = () =>{
+import { FlowView } from '../../models/FlowView';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { fetchFlow, finishFlow } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
+import { AppState } from '../../reducers';
+import { STEP_CHANGE } from '../../actions/currentStepActions';
+import { connect } from 'react-redux';
+
+interface StateProps{
+    isLoading: boolean;
+    fetchNeeded: boolean;
+    flowView: FlowView;
+    errorCodeMain: number;
+  }
+interface DispatchProps{
+    getFlow(id: string) : void;
+    finishFlow(id: string) : void;
+    menuNextStep() : void;
+
+}
+  
+type Props = StateProps & DispatchProps;
+const StepSummary : React.FC<Props> = (props) =>{
     const [isOpen, setOpen] = React.useState(false);
     const [answer, setAnswer] = React.useState(false);
     const closePopup = () =>{
@@ -19,48 +36,43 @@ const StepSummary = () =>{
     const openPopup = () =>{
         setOpen(true);
     } 
-    const dispatch = useDispatch();
-    const state: StepsState = useSelector((state: AppState) => state.stepsState);
     const history = useHistory();
     useEffect(()=>{
-        dispatch({
-            type: STEP_CHANGE,
-            payload: 3
-          })
+        props.menuNextStep();
     },[]);
     useEffect(()=>{
-        dispatch(getFlow(history.location.state.id));
-    },[state.fetchNeeded])
+        props.getFlow(history.location.state.id);
+    },[props.fetchNeeded])
 
     
     const navigateToSteps= () =>{
-        history.push(`/flow/${history.location.state.id}/steps`, {id: history.location.state.id});
+        history.push(`/flowadd/${history.location.state.id}/steps`, {id: history.location.state.id});
       }
     const answerChange = (value : boolean) =>{
         setAnswer(value);
     }
 
     if(answer){
-        dispatch(finishFlow(history.location.state.id));
+        props.finishFlow(history.location.state.id);
         setAnswer(false);
-        if(state.flowView.isValid){
-            history.push('/flow/list');
+        if(props.flowView.isValid){
+            history.push('/flow');
         }
     }
     return(
         <div className="wrapper">
-            {  state.isLoading &&
-                <LoadingSpinner message={state.loadingMessage}/>}
+            {  props.isLoading &&
+                <LoadingSpinner message="Zapisywanie przepływu produkcji..."/>}
             {isOpen ? <AlertComponent closePopup={closePopup} header="Potwierdzenie ukończenia" message="Zakończenie tego etapu spowoduje, że proces przejedzie w status aktywny. Czy jesteś pewień że chcesz zakończyć proces budowania?" setAnswer={answerChange}/> : null}
             <div>
-                <h1>Podsumowanie procesu produkcyjnego {state.flowView.name}</h1>
+                <h1>Podsumowanie procesu produkcyjnego {props?.flowView.name}</h1>
                 <table>
                     <tr>
                         <td>
                             Liczba dni potrzebnych na ukończenie:
                         </td>
                         <td>
-                            {state.flowView.requiredDaysToFinish}
+                            {props?.flowView.requiredDaysToFinish}
                         </td>
                     </tr>
                     <tr>
@@ -68,7 +80,7 @@ const StepSummary = () =>{
                             Status:
                         </td>
                         <td>
-                            {state.flowView.statusId === 1 ? "W budowie" : "Gotowe do użytku"}
+                            {props?.flowView.statusId === 1 ? "W budowie" : "Gotowe do użytku"}
                         </td>
                     </tr>
                     <tr>
@@ -76,15 +88,15 @@ const StepSummary = () =>{
                             Czy proces jest poprawny? 
                         </td>
                         <td>
-                            {state.flowView.isValid === true ? "Tak" : "Nie"}
+                            {props?.flowView.isValid === true ? "Tak" : "Nie"}
                         </td>
                     </tr>
                 </table>
                 <Button className="button-style" onClick={openPopup} >Zakończ</Button>
                 <Button className="button-style" onClick={navigateToSteps}>Wróć do poprzedniego etapu</Button>
-                {ErrorMessages.getMessage(state.errorCodeMain) !== "" &&
+                {ErrorMessages.getMessage(props.errorCodeMain) !== "" &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(state.errorCodeMain)}
+                    {ErrorMessages.getMessage(props.errorCodeMain)}
                 </Alert>
                 }
             </div>
@@ -92,5 +104,36 @@ const StepSummary = () =>{
     )
 }
 
-export default StepSummary;
+const mapDispatch = (
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  )=> {
+    return{
+        getFlow:(id: string) =>(
+            dispatch(fetchFlow(id))
+        ),
+        finishFlow:(id: string)=>(
+            dispatch(finishFlow(id))
+        ),
+        menuNextStep:()=>(
+            dispatch(
+                {
+                    type: STEP_CHANGE,
+                    payload: 3
+                })
+        )
+    }
+  }
+  
+  const mapStateToProps = (store: AppState) => {
+    return {
+        
+        isLoading: store.stepsState.isLoading,
+        errorCode: store.stepsState.errorCode,
+        flowView: store.stepsState.flowView
+    };
+  };
+  export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(StepSummary)
 

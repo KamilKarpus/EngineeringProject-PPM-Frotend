@@ -1,48 +1,53 @@
 import React, { useEffect }  from 'react';
 import './AddFlow.css';
 import { AppState } from '../../reducers';
-import { useSelector, useDispatch } from "react-redux";
-import { ProductionFlow } from '../../types/productionFlow';
-import { addProductionFlow, movedToNextPage } from '../../actions/productionFlowActions';
+import { connect } from "react-redux";
+import { MOVED_TO_THE_NEXT_PAGE } from '../../actions/productionFlowActions';
 import { Button, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import { ErrorMessages } from '../../ErrorMessage';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { STEP_CHANGE } from '../../actions/currentStepActions';
 import { MENU_CHANGE } from '../../actions/moduleActions';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { addProductionFlowAsync } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
 
+interface StateProps{
+  isLoading: boolean;
+  moveToNextPage: boolean;
+  id: string;
+  errorCode: number;
+}
+interface DispatchProps{
+    addProductionFlow(name: string) : void;
+    menuNextStep() : void;
+    changeMenu() : void;
+    moveToTheNextPage() : void;
 
-
-
-const AddFlow = () => {
+}
+type Props = StateProps & DispatchProps;
+const AddFlow : React.FC<Props> = (props : Props) => {
   const [newFlow, setNewFlow] = React.useState("");
   const updateNewFlow = () => (e: React.ChangeEvent<HTMLInputElement>) =>
     setNewFlow(e.currentTarget.value);
    
-  const flow: ProductionFlow = useSelector((state: AppState) => state.productionFlow);
-  const dispatch = useDispatch();
   const history = useHistory();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    dispatch(addProductionFlow(newFlow));
+    props.addProductionFlow(newFlow);
     setNewFlow("");
   };
 
   useEffect(()=>{
-    dispatch({
-      type: STEP_CHANGE,
-      payload: 1
-    })
-    dispatch({
-      type: MENU_CHANGE,
-      payload: 1
-  })
+    props.changeMenu();
+    props.menuNextStep();
   },[])
 
   const moveToNextPage = ()=>{
-    if(flow.moveToTheNextPage){
-      dispatch(movedToNextPage());
-      history.push(`/flow/${flow.id}/steps`, {id: flow.id});
+    if(props.moveToNextPage){
+      props.moveToTheNextPage();
+      history.push(`/flowadd/${props.id}/steps`, {id: props.id});
     }
   }
   moveToNextPage();
@@ -50,7 +55,7 @@ const AddFlow = () => {
   return (
   <div className="wrapper">
         {
-            flow.isLoading &&
+            props.isLoading &&
                 <LoadingSpinner message="Trwa tworzenie przepływu produkcji.."/>
       }
     <div>
@@ -68,9 +73,9 @@ const AddFlow = () => {
         </div>
       </Form>
     </div>
-    {ErrorMessages.getMessage(flow.errorCode) !== "" &&
+    {ErrorMessages.getMessage(props.errorCode) !== "" &&
         <Alert color="danger">
-            {ErrorMessages.getMessage(flow.errorCode)}
+            {ErrorMessages.getMessage(props.errorCode)}
         </Alert>
       }
     </div>
@@ -78,5 +83,44 @@ const AddFlow = () => {
   
   );
 };
+const mapDispatch = (
+  dispatch: ThunkDispatch<any, any, AnyAction>
+)=> {
+  return{
+    addProductionFlow:(name: string) =>(
+          dispatch(addProductionFlowAsync(name))
+      ),
+      menuNextStep:()=>(
+          dispatch({
+            type: STEP_CHANGE,
+            payload: 1
+          })
+      ),
+      changeMenu:()=>(
+        dispatch({
+          type: MENU_CHANGE,
+          payload: 1
+      })
+      ),
+      moveToTheNextPage:()=>{
+        dispatch({
+          type: MOVED_TO_THE_NEXT_PAGE,
+        })
+      }
+  }
+}
 
-export default AddFlow;
+const mapStateToProps = (store: AppState) => {
+  return {
+      
+      isLoading: store.productionFlow.isLoading,
+      errorCode: store.productionFlow.errorCode,
+      id: store.productionFlow.id,
+      moveToNextPage: store.productionFlow.moveToTheNextPage
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatch
+)(AddFlow)
+

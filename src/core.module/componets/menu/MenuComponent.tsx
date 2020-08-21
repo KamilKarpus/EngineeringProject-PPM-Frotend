@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 const SideMenu = () =>{
     const history = useHistory();
     const moveToPage = () =>{
-        history.push('/flow');
+        history.push('/flowadd');
         
     }
     return (
