@@ -1,40 +1,68 @@
 import React, { useEffect } from 'react';
-import { OrdersRepository } from '../../repositories/OrdersRepository';
 import { useHistory } from 'react-router-dom';
 import { OrderView } from '../../models/OrderView';
 import InfoSideMenu from '../../componets/infoSideMenu/InfoSideMenu';
-import { OrderState } from '../../types/Order';
-import { AppState } from '../../reducers';
-import { useSelector } from 'react-redux';
 import OrderInfo from '../../componets/orderInfo/OrderInfo';
+import LoadingSpinner from '../../../shared/components/Spinner';
+import { connect } from 'react-redux';
+import { AppState } from '../../reducers';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { fetchOrder } from '../../repositories/thunk-actions/OrderActions-Thunk';
 
-const OrderInfoPage = () =>{
-    const state: OrderState = useSelector((state: AppState) => state.orderState);
+interface StateProps{
+  fetchNeeded: boolean;
+  isLoading: boolean;
+}
+interface DispatchProps{
+  getOrder(orderId: string) : Promise<OrderView>
+}
+
+type props = StateProps & DispatchProps;
+
+const OrderInfoPage : React.FC<props> = (props) =>{
     const [order, setOrder] = React.useState<OrderView>();
-    const repository = new OrdersRepository();
     const history = useHistory();
-    console.log(order);
     useEffect(()=>{
-        repository.GetOrder(history.location.state.id)
+        props.getOrder(history.location.state.id)
         .then(p=>{
             setOrder(p);
         })
     },[]);
     useEffect(()=>{
-      if(state.fetchNeeded === true){
-      repository.GetOrder(history.location.state.id)
+      if(props.fetchNeeded === true){
+      props.getOrder(history.location.state.id)
       .then(p=>{
           setOrder(p);
         })
       }
-      },[state.fetchNeeded]);
+      },[props.fetchNeeded]);
     return( 
       <div className="flex-container">
         <div className="menu-left">
             <InfoSideMenu/>
         </div>
-        { order !== undefined ? <OrderInfo order={order as OrderView}/> : ""  }
+        { order !== undefined ? <OrderInfo order={order as OrderView}/> : <LoadingSpinner message="Trwa ładowanie zamówienia..."/>  }
       </div>
 );
 }
-export default OrderInfoPage;
+const mapDispatch = (
+  dispatch: ThunkDispatch<AppState, any, AnyAction>
+)=> {
+  return{
+      getOrder: (orderId : string) => (
+          dispatch(fetchOrder(orderId))
+      )
+  }
+}
+const mapStateToProps = (store: AppState) => {
+  return {
+      isLoading: store.orderState.isLoading,
+      fetchNeeded: store.orderState.fetchNeeded
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatch
+)(OrderInfoPage);
+

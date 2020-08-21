@@ -10,7 +10,6 @@ import { ThunkDispatch, ThunkAction } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchUserList } from '../repositories/thunk-actions/UserActions';
 import { connect } from 'react-redux';
-type ThunkResult<R> = ThunkAction<R, AppState, undefined, AnyAction>;
 
 interface StateProps {
     isLoading : boolean;
@@ -21,9 +20,6 @@ interface DispatchProps {
     getUserList(pageNumber : number , pageSize : number) : Promise<PaginationList<UserShortModel>>
 }
 
-interface OwnsProp {
-
-}
 
 type Props = DispatchProps & StateProps;
 
@@ -36,7 +32,6 @@ const UsersPage = (props : Props) =>{
     useEffect(()=>{
         props.getUserList(1, 10)
         .then(result => {
-            console.log(result);
             setUsers(result);
             setPage(1);
             generatePagination(result);
@@ -77,11 +72,9 @@ const UsersPage = (props : Props) =>{
     }
 
     const loadNext = ()=>{
-        console.log("next");
         loadPage(currentPage + 1)
     }
     const loadPrevious = ()=>{
-        console.log("before");
         loadPage(currentPage - 1);
     }
     return(

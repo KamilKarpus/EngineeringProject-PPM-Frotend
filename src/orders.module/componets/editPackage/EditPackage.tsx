@@ -1,30 +1,36 @@
 import React, { useEffect } from 'react';
 import LoadingSpinner from '../../../shared/components/Spinner';
-import { AiFillCloseCircle } from 'react-icons/ai';
-import { Form, FormGroup, Col, Label, Input, Button, FormFeedback } from 'reactstrap';
-import { OrderState } from '../../types/Order';
+import { Form, FormGroup, Col, Label, Input, Button, FormFeedback, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { AppState } from '../../reducers';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { FlowField } from './fields/FlowField';
-import { FlowRepository } from '../../repositories/FlowRepository';
 import AutoComplete from './AutoComplete';
 import { FlowView } from '../../models/FlowView';
 import { NumericField } from './fields/NumericField';
 import { WidthMessage, HeightMessage, WeightMessage } from './ValidateMessages';
-import { PackageDispatcher } from './EditPackageDispatcher';
 import { useHistory } from 'react-router-dom';
+import { addPackageAsync } from '../../repositories/thunk-actions/OrderActions-Thunk';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { fetchFlows } from '../../repositories/thunk-actions/FlowActions-Thunk';
 
-type Props = {
-    closePopup() : void;
+interface StateProps{
+  fetchNeeded: boolean;
+  isLoading: boolean;
+}
+interface DispatchProps{
+  addPackage(flowId: string,weight: number,height: number,width: number, orderId : string) : void;
+  getFlows(name: string) : Promise<FlowView[]>;
+}
+
+interface OwnProps {
+  closePopup() : void;
+  isOpen : boolean;
 };
 
+type Props = OwnProps & StateProps & DispatchProps;
 const EditPackage : React.FC<Props> = (props)=>{
-
     const history = useHistory();
-
-    const dispatch = useDispatch();
-    const dispatcher = new PackageDispatcher(dispatch);
-
     const [flow, setFlow] = React.useState<FlowField>(FlowField.Initial);
     const [height, setHeight] = React.useState<NumericField>(NumericField.initial);
     const [width, setWidth] = React.useState<NumericField>(NumericField.initial);
@@ -48,7 +54,6 @@ const EditPackage : React.FC<Props> = (props)=>{
       e.preventDefault();
       setWeight(NumericField.create(e.target.value, WeightMessage));
     }
-    const state: OrderState = useSelector((state: AppState) => state.orderState);
     
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
@@ -58,35 +63,28 @@ const EditPackage : React.FC<Props> = (props)=>{
         setWeight(NumericField.createFromNumber(weight.value, WeightMessage));
         setFlow(FlowField.Create(flow.value));
         if(width.valid() && height.valid() && width.valid() && flow.valid()){
-          dispatcher.addPackage(flow.value.id, weight.value, height.value,
+          props.addPackage(flow.value.id, weight.value, height.value,
             width.value, history.location.state.id);
         }
       }
     
       const loadItems = (name : string) : Promise<FlowView[]> =>{
-        const repository = new FlowRepository();
-        return repository.GetFlow(name);
+          return props.getFlows(name);
       }
     
       useEffect(()=>{
-        if(state.fetchNeeded === true){
+        if(props.fetchNeeded === true){
           props.closePopup();
         }
-      },[state.fetchNeeded])
+      },[props.fetchNeeded])
     return (
-        <div className='popup'>
-            <div>
+      <Modal isOpen={props.isOpen} toggle={props.closePopup} size='lg'>
             {
-              state.isLoading &&
-                <LoadingSpinner message="Trwa dodawanie nowej pozycji do zamówienia..."/>
-              }
-            </div>
-            <div className='popup_inner'>
-              <div className="header">
-                  Dodaj nową paczkę do zamówienia
-                   <a onClick={props.closePopup}> <AiFillCloseCircle className="close_buton" size="35"/> </a>
-               </div>
-                <Form className="form" onSubmit={handleSubmit}>
+                props.isLoading && <LoadingSpinner message="Trwa tworzenie nowej paczki..."/>
+            }
+        <Form onSubmit={handleSubmit}>
+            <ModalHeader toggle={props.closePopup}>Nowa paczka</ModalHeader>
+            <ModalBody>
                 <FormGroup row>
                     <Label for="height" sm={2}>Wysokość [m]</Label>
                     <Col sm={10}>
@@ -133,10 +131,36 @@ const EditPackage : React.FC<Props> = (props)=>{
                       </div>
                     </Col>
                 </FormGroup>
-                <Button>Zapisz</Button>
-                </Form>
-             </div>
-            </div>
+                </ModalBody>
+              <ModalFooter>
+                <Button color="primary">Zapisz</Button>{' '}
+                <Button color="secondary" onClick={props.closePopup}>Anuluj</Button>
+              </ModalFooter>
+          </Form>
+        </Modal>
         );
 }
-export default EditPackage;
+
+const mapDispatch = (
+  dispatch: ThunkDispatch<any, any, AnyAction>
+)=> {
+  return{
+    addPackage: (flowId: string,weight: number,height: number,width: number, orderId : string)  => (
+          dispatch(addPackageAsync(flowId, weight, height, width, orderId))
+      ),
+    getFlows: (name: string) =>(
+      dispatch(fetchFlows(name))
+    )
+  }
+}
+
+const mapStateToProps = (store: AppState) => {
+  return {
+      isLoading: store.orderState.isLoading,
+      fetchNeeded: store.orderState.fetchNeeded
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatch
+)(EditPackage)

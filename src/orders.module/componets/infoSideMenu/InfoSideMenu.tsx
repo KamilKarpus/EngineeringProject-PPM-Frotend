@@ -15,7 +15,7 @@ const InfoSideMenu = () =>{
     return(
     <div className="container">
           {
-                isOpen === true && <EditPackage closePopup={closePopup}/>
+                isOpen === true && <EditPackage closePopup={closePopup} isOpen={isOpen}/>
             }
     <ul>
         <li>

@@ -20,18 +20,22 @@ export function usersReducer(state: UsersState = initial, action : UsersActions)
     switch(action.type){
         case ADD_USER:{
             return{
+                ...state,
                 isLoading: true,
                 fetchNeeded: false,
+            
             }
         }
         case USER_ADDED:{
             return {
+                ...state,
                 fetchNeeded : true,
                 isLoading: false, 
             }
         }
         case FETCHED_DATA:{
             return {
+                ...state,
                 fetchNeeded: false,
                 isLoading: false
             }

@@ -1,29 +1,39 @@
 import React, { useEffect } from 'react';
 import LoadingSpinner from '../../../shared/components/Spinner';
-import { AiFillCloseCircle } from 'react-icons/ai';
-import { Form, FormGroup, Col, Label, FormFeedback, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Col, Label, FormFeedback, Input, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { NameField } from './fields/OrderNameField';
 import DatePicker, { registerLocale } from "react-datepicker";
 import pl from 'date-fns/locale/pl';
 import "react-datepicker/dist/react-datepicker.css";
 import { DateField } from './fields/DateField';
-import { OrderState } from '../../types/Order';
+import { connect } from 'react-redux';
 import { AppState } from '../../reducers';
-import { useSelector, useDispatch } from 'react-redux';
-import { addOrder } from '../../actions/OrderActions';
+import { AnyAction } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { addOrderAsync } from '../../repositories/thunk-actions/OrderActions-Thunk';
+import { AddOrder } from '../../models/AddOrder';
 
 registerLocale('pl', pl)
 
-type Props = {
+interface StateProps{
+    fetchNeeded: boolean;
+    isLoading: boolean;
+}
+interface DispatchProps{
+    addOrder(companyName : string, deliveryDate : Date, description : string) : void;
+}
+
+interface OwnProps {
     closePopup() : void;
+    isOpen : boolean;
 };
 
+type Props = OwnProps & StateProps & DispatchProps;
+
 const EditOrder : React.FC<Props> = (props)=>{
-    const dispatch = useDispatch();
     const [orderName, setOrderName] = React.useState<NameField>(NameField.initial);
     const [dateValue, setDateValue] = React.useState<DateField>(DateField.initial);
     const [description, setValue] = React.useState("");
-    const state: OrderState = useSelector((state: AppState) => state.orderState);
     
     const updateOrderName = () => (e: React.ChangeEvent<HTMLInputElement>) =>{
         e.preventDefault();
@@ -34,34 +44,27 @@ const EditOrder : React.FC<Props> = (props)=>{
         setValue(e.target.value);
       }
       useEffect(()=>{
-          if(state.fetchNeeded){
+          if(props.fetchNeeded){
             props.closePopup();
           }
-      }, [state.fetchNeeded]);
+      }, [props.fetchNeeded]);
       const handleSubmit = (e: React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
         setOrderName(NameField.create(orderName.value));
         setDateValue(DateField.create(dateValue.value));
         if(orderName.valid() && dateValue.valid()){
-              dispatch(addOrder(orderName.value,dateValue.value,
-                description));
+            props.addOrder(orderName.value, dateValue.value, description);
           }
         }
 
     return (
-        <div className='popup'>
-            <div>
-            {
-              state.isLoading &&
-                <LoadingSpinner message="Trwa tworzenie nowego zamówienia..."/>
-              }
-            </div>
-            <div className='popup_inner'>
-              <div className="header">
-                  Utwórz nowe zamówienie
-                   <a onClick={props.closePopup}> <AiFillCloseCircle className="close_buton" size="35"/> </a>
-               </div>
-                <Form className="form" onSubmit={handleSubmit}>
+      <Modal isOpen={props.isOpen} toggle={props.closePopup} size='lg'>
+      {
+          props.isLoading && <LoadingSpinner message="Trwa tworzenie nowego zamówienia..."/>
+      }
+    <Form onSubmit={handleSubmit}>
+        <ModalHeader toggle={props.closePopup}>Nowe zamówienie</ModalHeader>
+          <ModalBody>
                 <FormGroup row>
                     <Label for="orderClientName" sm={2}>Nazwa Klienta</Label>
                     <Col sm={10}>
@@ -98,11 +101,33 @@ const EditOrder : React.FC<Props> = (props)=>{
                         value={description} />
                     </Col>
                 </FormGroup>
-                <Button>Zapisz</Button>
-                </Form>
-             </div>
-            </div>
+                </ModalBody>
+              <ModalFooter>
+                <Button color="primary">Zapisz</Button>{' '}
+                <Button color="secondary" onClick={props.closePopup}>Anuluj</Button>
+              </ModalFooter>
+          </Form>
+        </Modal>
         );
 }
-export default EditOrder;
+const mapDispatch = (
+  dispatch: ThunkDispatch<any, any, AnyAction>
+)=> {
+  return{
+    addOrder: (companyName : string, deliveryDate : Date, description : string) => (
+          dispatch(addOrderAsync(new AddOrder(companyName, deliveryDate, description)))
+      )
+  }
+}
+
+const mapStateToProps = (store: AppState) => {
+  return {
+      isLoading: store.orderState.isLoading,
+      fetchNeeded: store.orderState.fetchNeeded
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatch
+)(EditOrder)
 

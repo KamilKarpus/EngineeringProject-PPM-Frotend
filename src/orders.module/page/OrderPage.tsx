@@ -2,14 +2,24 @@ import React, { useEffect } from 'react';
 import { OrderShortView } from '../models/OrderShortView';
 import { PaginationList } from '../../shared/model/Pagination';
 import { Table } from 'reactstrap';
-import { OrdersRepository } from '../repositories/OrdersRepository';
 import { isNullOrUndefined } from 'util';
 import PagePagination from '../../shared/components/paginations/Pagination';
-import { OrderState } from '../types/Order';
-import { useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { AppState } from '../reducers';
 import SideMenu from '../componets/sideMenu/SideMenu';
 import { useHistory } from 'react-router-dom';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { fetchOrdersList } from '../repositories/thunk-actions/OrderActions-Thunk';
+interface StateProps{
+    fetchNeeded: boolean;
+    isLoading: boolean;
+}
+interface DispatchProps{
+    getOrders(pageNumber : number , pageSize : number) : Promise<PaginationList<OrderShortView>>
+}
+
+type props = StateProps & DispatchProps;
 const initial : PaginationList<OrderShortView> ={
     currentPage: 0,
     totalPages: 0,
@@ -20,17 +30,14 @@ const initial : PaginationList<OrderShortView> ={
     hasNext: false,
 }
 
-const OrdersPage = () =>{
+const OrdersPage :React.FC<props> = (props) =>{
     const history = useHistory();
-    const repository = new OrdersRepository();
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
     const   [orders, setOrderList] = React.useState<PaginationList<OrderShortView>>(initial);
-    const state: OrderState = useSelector((state: AppState) => state.orderState);
     useEffect(()=>{
-        repository.GetOrders(1, 10)
+        props.getOrders(1, 10)
         .then(result => {
-            setOrderList(initial);
             setOrderList(result);
             setPage(1);
             generatePagination(result);
@@ -38,16 +45,15 @@ const OrdersPage = () =>{
     },[]);
 
     useEffect(()=>{
-        if(state.fetchNeeded === true){
-        repository.GetOrders(currentPage, 10)
+        if(props.fetchNeeded === true){
+        props.getOrders(currentPage, 10)
         .then(result => {
-            setOrderList(initial);
             setOrderList(result);
             setPage(currentPage);
             generatePagination(result);
         });
     }
-    },[state.fetchNeeded]);
+    },[props.fetchNeeded]);
 
     const generatePagination = (result : PaginationList<OrderShortView>) => {
         let pagginationElements = [];
@@ -62,9 +68,8 @@ const OrdersPage = () =>{
     const loadPage = (page: number) =>{
         if(page >= 1 && page <= orders!.totalPages) 
         {
-        repository.GetOrders(page, 10)
+        props.getOrders(page, 10)
         .then(result => {
-            setOrderList(initial);
             setOrderList(result);
             setPage(page);
             generatePagination(result);
@@ -122,5 +127,23 @@ const OrdersPage = () =>{
         </div>    
     )
 }
+const mapDispatch = (
+    dispatch: ThunkDispatch<AppState, any, AnyAction>
+)=> {
+    return{
+        getOrders: (pageNumber : number , pageSize : number) => (
+            dispatch(fetchOrdersList(pageSize, pageNumber)))
 
-export default OrdersPage;
+  }
+}
+  const mapStateToProps = (store: AppState) => {
+    return {
+        isLoading: store.orderState.isLoading,
+        fetchNeeded: store.orderState.fetchNeeded
+    };
+  };
+export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(OrdersPage);
+
