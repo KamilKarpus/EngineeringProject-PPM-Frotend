@@ -1,19 +1,31 @@
-import React from 'react';
-import { AiFillCloseCircle } from 'react-icons/ai';
+import React, { useEffect } from 'react';
 import './LocationEditComponent.css';
-import { Form, FormGroup, Label, Col, Input, Button, FormFeedback, Alert } from 'reactstrap';
+import { Form, FormGroup, Label, Col, Input, Button, FormFeedback, Alert, ModalHeader, ModalBody, Modal, ModalFooter } from 'reactstrap';
 import { NameField } from './formFields/NameField';
 import { ShortNameField } from './formFields/ShortNameField';
 import { NumericField } from './formFields/NumericField';
-import { LocationState } from '../../types/LocationState';
 import { AppState } from '../../reducers';
-import { useSelector, useDispatch } from 'react-redux';
-import { addLocation } from '../../actions/LocationsAction';
+import {  connect } from 'react-redux';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
-type Props = {
-    closePopup() : void;
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { addLocation } from '../../repositories/thunk-actions/LocationThunk-Action';
+interface StateProps{
+  isLoading: boolean;
+  errorCode : number;
+  fetchNeeded: boolean;
+}
+interface DispatchProps{
+  addLocation(name: string, type: number, handleQR: boolean, description: string,
+    height: number, width: number, shortName: string) : void;
+}
+
+interface OwnProps {
+  closePopup() : void;
+  isOpen : boolean;
 };
+type Props = OwnProps & DispatchProps & StateProps;
 
 const LocationEditComponent : React.FC<Props> = (props) =>{
   const [locationName, setLocationName] = React.useState<NameField>(NameField.initial);   
@@ -23,9 +35,12 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
   const [printing, setPrinting] = React.useState(false);
   const [locationType, setLocationType] = React.useState(1);
   const [description, setDescription] = React.useState("");
-  const location: LocationState = useSelector((state: AppState) => state.Location);
   
-  const dispatch = useDispatch();
+  useEffect(()=>{
+    if(props.fetchNeeded === true){
+      props.closePopup();
+    }
+  },[props.fetchNeeded])
 
   const updateLocationName = () => (e: React.ChangeEvent<HTMLInputElement>) =>{
     e.preventDefault();
@@ -60,23 +75,17 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
     setWidth(NumericField.createFromNumber(width.value,"Szerekość lokalizacji musi być większa od 0!"));
     setHeight(NumericField.createFromNumber(height.value, "Wysokość lokalizacji musi być większa od 0!"));
     if(locationName.valid() && locationShortName.valid() && height.valid() && width.valid()){
-        dispatch(addLocation(locationName.value, locationType, printing, description, height.value, width.value,locationShortName.value));
+        props.addLocation(locationName.value, locationType, printing, description, height.value, width.value,locationShortName.value);
       }
     }
     return (
-<div className='popup'>
-    <div>
-    {
-            location.isLoading &&
-                <LoadingSpinner message="Trwa tworzenie nowej lokalizacji..."/>
+    <Modal isOpen={props.isOpen} toggle={props.closePopup} size='lg'>
+      {
+          props.isLoading && <LoadingSpinner message="Trwa tworzenie nowej lokalizacji..."/>
       }
-    </div>
-    <div className='popup_inner'>
-      <div className="header">
-          Utwórz nowa lokalizacje
-           <a onClick={props.closePopup}> <AiFillCloseCircle className="close_buton" size="35"/> </a>
-       </div>
-       <Form className="form" onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
+      <ModalHeader toggle={props.closePopup}>Nowa paczka</ModalHeader>
+      <ModalBody>
        <FormGroup row>
         <Label for="locatioName" sm={2}>Nazwa</Label>
         <Col sm={10}>
@@ -148,16 +157,40 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
         </Label>
       </FormGroup>
       <FormGroup>
-            {ErrorMessages.hasErrorCode(location.errorCode) === true &&
+            {ErrorMessages.hasErrorCode(props.errorCode) === true &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(location.errorCode)}
+                    {ErrorMessages.getMessage(props.errorCode)}
                 </Alert>
             }
       </FormGroup>
-        <Button>Zapisz</Button>
-       </Form>
-     </div>
-    </div>
+      </ModalBody>
+        <ModalFooter>
+          <Button color="primary">Zapisz</Button>{' '}
+          <Button color="secondary" onClick={props.closePopup}>Anuluj</Button>
+        </ModalFooter>
+        </Form>
+      </Modal>
 );
 }
-export default LocationEditComponent;
+const mapDispatch = (
+  dispatch: ThunkDispatch<any, any, AnyAction>
+)=> {
+  return{
+    addLocation: (name: string, type: number, handleQR: boolean, description: string,
+      height: number, width: number, shortName: string)  => (
+          dispatch(addLocation(name, type, handleQR, description, height, width, shortName))
+      ),
+  }
+}
+
+const mapStateToProps = (store: AppState) => {
+  return {
+      isLoading: store.Location.isLoading,
+      errorCode: store.Location.errorCode,
+      fetchNeeded: store.Location.fetchNedeed,
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatch
+)(LocationEditComponent)

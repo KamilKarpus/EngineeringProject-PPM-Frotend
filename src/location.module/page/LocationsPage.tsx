@@ -6,6 +6,11 @@ import { LocationRepository } from '../repositories/LocationRepository';
 import { isNullOrUndefined } from 'util';
 import PagePagination from '../../shared/components/paginations/Pagination';
 import './LocationPage.css';
+import { connect } from 'react-redux';
+import { AppState } from '../reducers';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
+import { fetchLocationList } from '../repositories/thunk-actions/LocationThunk-Action';
 const initial : PaginationList<LocationView> ={
     currentPage: 0,
     totalPages: 0,
@@ -15,15 +20,22 @@ const initial : PaginationList<LocationView> ={
     hasPrevious: false,
     hasNext: false,
 }
+interface StateProps{
+    fetchNeeded: boolean;
+}
+interface DispatchProps{
+    getLocations(pageNumber : number, pageSize : number) : Promise<PaginationList<LocationView>>
+}
+  
+type Props = DispatchProps & StateProps;
 
-const AddLocationPage = () =>{
-    const repository = new LocationRepository();
+const AddLocationPage : React.FC<Props>  = (props) =>{
     const [locations, setLocations] = React.useState<PaginationList<LocationView>>(initial);
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
 
     useEffect(() =>{
-        repository.GetLocations(1,10)
+        props.getLocations(1,10)
         .then(result =>{
             setLocations(result);
             setPage(1);
@@ -39,12 +51,21 @@ const AddLocationPage = () =>{
            }
            setPagination(pagginationElements);
        }
-
    }
+   useEffect(()=>{
+    if(props.fetchNeeded === true){
+        props.getLocations(1,10)
+        .then(result =>{
+            setLocations(result);
+            setPage(1);
+            generatePagination(result);
+        });
+    }
+   },[props.fetchNeeded])
    const loadPage = (page: number) =>{
        if(page >= 1 && page <= locations!.totalPages) 
        {
-       repository.GetLocations(page, 10)
+       props.getLocations(page, 10)
        .then(result => {
            setLocations(result);
            setPage(page);
@@ -71,10 +92,29 @@ const AddLocationPage = () =>{
                 ))}
                 </thead>
             </Table>
-            <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={locations.totalCount}
-            activePage = {locations.currentPage} paginations={pagination as number[]} />
+            <div className="d-flex justify-content-center">
+                <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={locations.totalCount}
+                activePage = {locations.currentPage} paginations={pagination as number[]} />
+            </div>
         </div>
     );
 }
-
-export default AddLocationPage;
+const mapDispatch = (
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  )=> {
+    return{
+        getLocations : (pageNumber : number, pageSize : number)  => (
+            dispatch(fetchLocationList(pageSize, pageNumber))
+        ),
+    }
+  }
+  
+  const mapStateToProps = (store: AppState) => {
+    return {
+        fetchNeeded: store.Location.fetchNedeed
+    };
+  };
+  export default connect(
+    mapStateToProps,
+    mapDispatch
+  )(AddLocationPage);

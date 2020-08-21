@@ -14,7 +14,7 @@ const SideMenu = () =>{
     return(
     <div className="container">
           {
-                isOpen === true && <LocationEditComponent closePopup={closePopup}/>
+                isOpen === true && <LocationEditComponent closePopup={closePopup} isOpen={isOpen}/>
             }
     <ul>
         <li>
