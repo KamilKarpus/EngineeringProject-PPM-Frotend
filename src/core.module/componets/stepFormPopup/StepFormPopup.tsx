@@ -25,6 +25,7 @@ interface StateProps{
   interface DispatchProps{
     addStep(name: string, days: number, locationId: string, percentage: number, flowId : string) : void;
     getLocations(locationName: string ) : Promise<LocationView[]>; 
+    getErrorMessage(code: number) : string;
   }
   
   interface OwnProps {
@@ -154,9 +155,9 @@ const StepFormPopup : React.FC<Props> = (props) => {
                     valid={!locationField.hasError && locationField.hasValue()} />
             </FormGroup>
             <FormGroup>
-            {ErrorMessages.getMessage(props.errorCode) !== "" &&
+            { props.errorCode > 0 &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(props.errorCode)}
+                    {props.getErrorMessage(props.errorCode)}
                 </Alert>
             }
             </FormGroup>
@@ -172,13 +173,17 @@ const StepFormPopup : React.FC<Props> = (props) => {
 const mapDispatch = (
     dispatch: ThunkDispatch<any, any, AnyAction>
   )=> {
+    const errors = new ErrorMessages();
     return{
         addStep: (name: string, days: number, locationId: string, percentage: number, flowId : string)  => (
             dispatch(addStepAsync(name, days, locationId, percentage, flowId))
         ),
         getLocations: (locationName: string ) =>(
             dispatch(fetchLocations(locationName))
-        )
+        ),
+        getErrorMessage:(code: number): string=>{
+            return errors.getMessage(code);
+        }
     }
   }
   

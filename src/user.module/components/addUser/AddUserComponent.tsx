@@ -2,7 +2,7 @@ import React, { useEffect} from 'react';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { connect } from 'react-redux';
 import { AppState } from '../../reducers';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormFeedback, Input, Col, FormGroup, Label } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormFeedback, Input, Col, FormGroup, Label, Alert } from 'reactstrap';
 import { StringField } from './fields/StringField';
 import { EmailField } from './fields/EmailField';
 import { PasswordField } from './fields/PasswordField';
@@ -10,10 +10,13 @@ import { AddUser } from '../../models/AddUserModule';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { addUserAsync } from '../../repositories/thunk-actions/UserActions';
+import { ErrorMessages } from '../../ErrorMessage';
 
 interface StateProps {
     isLoading : boolean;
     fetchNeeded : boolean;
+    errorCode : number;
+    getErrorMessage(code : number) : string;
 }
 
 interface DispatchProps {
@@ -150,6 +153,11 @@ const AddUserComponent = (props: Props) =>{
                         </FormFeedback>
                     </Col>
                 </FormGroup>
+                {props.errorCode > 0 &&
+                <Alert color="danger">
+                    {props.getErrorMessage(props.errorCode)}
+                </Alert>
+            }
             </ModalBody>
             <ModalFooter>
               <Button color="primary">Zapisz</Button>{' '}
@@ -173,9 +181,14 @@ const mapDispatch = (
     }
   }
   const mapStateToProps = (store: AppState) => {
+    const errors = new ErrorMessages();
     return {
         isLoading: store.users.isLoading,
-        fetchNeeded: store.users.fetchNeeded
+        fetchNeeded: store.users.fetchNeeded,
+        errorCode: store.users.errorCode,
+        getErrorMessage: (code: number) :string=>{
+            return errors.getMessage(code);
+        }
     };
   };
 export default connect(

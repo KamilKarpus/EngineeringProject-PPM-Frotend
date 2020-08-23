@@ -1,9 +1,10 @@
-import { OrderActions, ADD_ORDER, ORDER_ADDED, ADD_PACKAGE, PACKAGE_ADDED } from "../actions/OrderActions";
+import { OrderActions, ADD_ORDER, ORDER_ADDED, ADD_PACKAGE, PACKAGE_ADDED, ERROR } from "../actions/OrderActions";
 import { OrderState } from "../types/Order";
 const initial = {
     isLoading : false,
     fetchNeeded : false,
-    loadingMessage: ""   
+    loadingMessage: "",
+    errorCode: 0
 }
 
 export function orderReducer(state: OrderState = initial, action : OrderActions){
@@ -31,6 +32,14 @@ export function orderReducer(state: OrderState = initial, action : OrderActions)
                 ...state,
                 isLoading: false, 
                 fetchNeeded: true
+            }
+        }
+        case ERROR:{
+            return{
+                ...state,
+                isLoading: false,
+                fetchNeeded: false,
+                errorCode: action.payload
             }
         }
         default:{

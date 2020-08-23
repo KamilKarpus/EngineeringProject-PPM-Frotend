@@ -2,6 +2,7 @@ export const ADDING_LOCATION = "ADDING_LOCATION";
 export const LOCATION_ADDED = "LOCATION_ADDED";
 export const ERROR_WHEHN_ADDING = "ERROR_WHEN_ADDING";
 export const FETCHED_DATA = "FETCHED_DATA";
+export const ERROR = "ERROR";
 export interface AddingLocationAction {
     type: typeof ADDING_LOCATION;
 }

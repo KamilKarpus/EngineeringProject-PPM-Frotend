@@ -15,6 +15,7 @@ interface StateProps{
   isLoading: boolean;
   errorCode : number;
   fetchNeeded: boolean;
+  getErrorMessage(code: number) : string;
 }
 interface DispatchProps{
   addLocation(name: string, type: number, handleQR: boolean, description: string,
@@ -157,9 +158,9 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
         </Label>
       </FormGroup>
       <FormGroup>
-            {ErrorMessages.hasErrorCode(props.errorCode) === true &&
+            {props.errorCode > 0 &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(props.errorCode)}
+                    {props.getErrorMessage(props.errorCode)}
                 </Alert>
             }
       </FormGroup>
@@ -184,10 +185,14 @@ const mapDispatch = (
 }
 
 const mapStateToProps = (store: AppState) => {
+  const errors = new ErrorMessages();
   return {
       isLoading: store.Location.isLoading,
       errorCode: store.Location.errorCode,
       fetchNeeded: store.Location.fetchNedeed,
+      getErrorMessage: (code: number) : string =>{
+          return errors.getMessage(code);
+      }
   };
 };
 export default connect(

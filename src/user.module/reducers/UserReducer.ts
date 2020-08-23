@@ -1,19 +1,11 @@
-import { ADD_USER, USER_ADDED, UsersActions, FETCHED_DATA } from "../actions/UsersActions";
+import { ADD_USER, USER_ADDED, UsersActions, FETCHED_DATA, ERROR } from "../actions/UsersActions";
 import { UsersState } from "../types/User";
 
 
 const initial = {
     isLoading : false,
     fetchNeeded : false,
-    users: {
-        currentPage: 0,
-        totalPages: 0,
-        pageSize: 0,
-        totalCount: 0,
-        items: [],
-        hasPrevious: false,
-        hasNext: false,
-    }
+    errorCode: 0
 }
 
 export function usersReducer(state: UsersState = initial, action : UsersActions){
@@ -23,7 +15,7 @@ export function usersReducer(state: UsersState = initial, action : UsersActions)
                 ...state,
                 isLoading: true,
                 fetchNeeded: false,
-            
+                erroCode: 0
             }
         }
         case USER_ADDED:{
@@ -31,13 +23,22 @@ export function usersReducer(state: UsersState = initial, action : UsersActions)
                 ...state,
                 fetchNeeded : true,
                 isLoading: false, 
+                erroCode: 0
             }
         }
         case FETCHED_DATA:{
             return {
                 ...state,
                 fetchNeeded: false,
-                isLoading: false
+                isLoading: false,
+                erroCode: 0
+            }
+        }
+        case ERROR:{
+            return {
+                fetchNeeded: false,
+                isLoding: false,
+                errorCode: action.payload
             }
         }
         default:{

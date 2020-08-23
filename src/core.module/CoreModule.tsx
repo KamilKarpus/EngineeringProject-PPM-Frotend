@@ -6,7 +6,6 @@ import ModuleApp from './ModuleApp';
 
 const store = configureStore();
 const CoreModule = () => {
-  ErrorMessages.Initialize();
   return (
     <Provider store={store}>
       <ModuleApp/>

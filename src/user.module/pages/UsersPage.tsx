@@ -6,7 +6,7 @@ import { isNullOrUndefined } from 'util';
 import UserList from '../components/userList/UserList';
 import LoadingSpinner from '../../shared/components/Spinner';
 import { AppState } from '../reducers';
-import { ThunkDispatch, ThunkAction } from 'redux-thunk';
+import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchUserList } from '../repositories/thunk-actions/UserActions';
 import { connect } from 'react-redux';

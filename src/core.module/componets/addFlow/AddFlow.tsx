@@ -24,6 +24,7 @@ interface DispatchProps{
     menuNextStep() : void;
     changeMenu() : void;
     moveToTheNextPage() : void;
+    getErrorMessage(code: number) : string;
 
 }
 type Props = StateProps & DispatchProps;
@@ -73,9 +74,9 @@ const AddFlow : React.FC<Props> = (props : Props) => {
         </div>
       </Form>
     </div>
-    {ErrorMessages.getMessage(props.errorCode) !== "" &&
+    { props.errorCode > 0 &&
         <Alert color="danger">
-            {ErrorMessages.getMessage(props.errorCode)}
+            {props.getErrorMessage(props.errorCode)}
         </Alert>
       }
     </div>
@@ -86,6 +87,7 @@ const AddFlow : React.FC<Props> = (props : Props) => {
 const mapDispatch = (
   dispatch: ThunkDispatch<any, any, AnyAction>
 )=> {
+  const errors = new ErrorMessages();
   return{
     addProductionFlow:(name: string) =>(
           dispatch(addProductionFlowAsync(name))
@@ -106,7 +108,10 @@ const mapDispatch = (
         dispatch({
           type: MOVED_TO_THE_NEXT_PAGE,
         })
-      }
+      },
+      getErrorMessage:(code: number) : string=>{
+        return errors.getMessage(code);
+      },
   }
 }
 

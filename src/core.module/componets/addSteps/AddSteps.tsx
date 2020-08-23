@@ -26,6 +26,7 @@ interface DispatchProps{
   getFlow(id: string) : void;
   menuNextStep() : void;
   changePosition(flowId : string, stepId: string, stepNumber: number) : void;
+  getErrorMessage(code: number) : string;
 
 }
 
@@ -69,9 +70,9 @@ const AddSteps : React.FC<Props>= (props) => {
             props.isLoading &&
                 <LoadingSpinner message={props.loadingMessage}/>
       }
-      {ErrorMessages.getMessage(props.errorCodeMain) !== "" &&
+      {props.errorCodeMain > 0 &&
           <Alert color="danger">
-              {ErrorMessages.getMessage(props.errorCodeMain)}
+              {props.getErrorMessage(props.errorCodeMain)}
           </Alert>
       }
       <div>
@@ -118,6 +119,7 @@ const AddSteps : React.FC<Props>= (props) => {
 const mapDispatch = (
   dispatch: ThunkDispatch<any, any, AnyAction>
 )=> {
+  const errors = new ErrorMessages();
   return{
       getFlow:(id: string) =>(
           dispatch(fetchFlow(id))
@@ -130,7 +132,10 @@ const mapDispatch = (
               })
       ),
       changePosition: (flowId : string, stepId: string, stepNumber: number)=>{
-        dispatch(changePositionAsync(flowId,stepId, stepNumber))
+          dispatch(changePositionAsync(flowId,stepId, stepNumber))
+      },
+      getErrorMessage:(code: number): string=>{
+          return errors.getMessage(code);
       }
   }
 }
@@ -139,7 +144,7 @@ const mapStateToProps = (store: AppState) => {
   return {
       
       isLoading: store.stepsState.isLoading,
-      errorCode: store.stepsState.errorCode,
+      errorCodeMain: store.stepsState.errorCodeMain,
       flowView: store.stepsState.flowView,
       loadingMessage: store.stepsState.loadingMessage,
       fetchNeeded: store.stepsState.fetchNeeded

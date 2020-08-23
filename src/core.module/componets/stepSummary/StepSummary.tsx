@@ -23,7 +23,7 @@ interface DispatchProps{
     getFlow(id: string) : void;
     finishFlow(id: string) : void;
     menuNextStep() : void;
-
+    getErrorMessage(code: number) : string;
 }
   
 type Props = StateProps & DispatchProps;
@@ -94,9 +94,9 @@ const StepSummary : React.FC<Props> = (props) =>{
                 </table>
                 <Button className="button-style" onClick={openPopup} >Zakończ</Button>
                 <Button className="button-style" onClick={navigateToSteps}>Wróć do poprzedniego etapu</Button>
-                {ErrorMessages.getMessage(props.errorCodeMain) !== "" &&
+                {props.errorCodeMain > 0 &&
                 <Alert color="danger">
-                    {ErrorMessages.getMessage(props.errorCodeMain)}
+                    {props.getErrorMessage(props.errorCodeMain)}
                 </Alert>
                 }
             </div>
@@ -107,6 +107,7 @@ const StepSummary : React.FC<Props> = (props) =>{
 const mapDispatch = (
     dispatch: ThunkDispatch<any, any, AnyAction>
   )=> {
+    const errors = new ErrorMessages();
     return{
         getFlow:(id: string) =>(
             dispatch(fetchFlow(id))
@@ -120,7 +121,10 @@ const mapDispatch = (
                     type: STEP_CHANGE,
                     payload: 3
                 })
-        )
+        ),
+        getErrorMessage:(code: number) : string=>{
+            return errors.getMessage(code);
+          },
     }
   }
   
@@ -128,7 +132,7 @@ const mapDispatch = (
     return {
         
         isLoading: store.stepsState.isLoading,
-        errorCode: store.stepsState.errorCode,
+        errorCodeMain: store.stepsState.errorCodeMain,
         flowView: store.stepsState.flowView
     };
   };

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import LoadingSpinner from '../../../shared/components/Spinner';
-import { Form, FormGroup, Col, Label, Input, Button, FormFeedback, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Form, FormGroup, Col, Label, Input, Button, FormFeedback, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import { AppState } from '../../reducers';
 import { connect } from 'react-redux';
 import { FlowField } from './fields/FlowField';
@@ -13,10 +13,13 @@ import { addPackageAsync } from '../../repositories/thunk-actions/OrderActions-T
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchFlows } from '../../repositories/thunk-actions/FlowActions-Thunk';
+import { ErrorMessage } from '../../ErrorMessage';
 
 interface StateProps{
   fetchNeeded: boolean;
   isLoading: boolean;
+  errorCode: number;
+  getErrorMessage(code: number) : string;
 }
 interface DispatchProps{
   addPackage(flowId: string,weight: number,height: number,width: number, orderId : string) : void;
@@ -131,6 +134,11 @@ const EditPackage : React.FC<Props> = (props)=>{
                       </div>
                     </Col>
                 </FormGroup>
+                {props.errorCode > 0 &&
+                <Alert color="danger">
+                    {props.getErrorMessage(props.errorCode)}
+                </Alert>
+                }
                 </ModalBody>
               <ModalFooter>
                 <Button color="primary">Zapisz</Button>{' '}
@@ -155,9 +163,15 @@ const mapDispatch = (
 }
 
 const mapStateToProps = (store: AppState) => {
+  const errors = new ErrorMessage();
   return {
       isLoading: store.orderState.isLoading,
-      fetchNeeded: store.orderState.fetchNeeded
+      fetchNeeded: store.orderState.fetchNeeded,
+      errorCode: store.orderState.errorCode,
+      getErrorMessage: (code: number) : string=>{
+        return errors.getMessage(code);
+      }
+      
   };
 };
 export default connect(

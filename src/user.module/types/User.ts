@@ -4,4 +4,5 @@ import UserShortModel from "../models/UserShortModel";
 export interface UsersState{
     isLoading : boolean,
     fetchNeeded : boolean,
+    errorCode : number,
 }

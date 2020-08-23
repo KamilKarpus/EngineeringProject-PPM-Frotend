@@ -3,6 +3,7 @@ export const ORDER_ADDED = "ORDERD_ADDED";
 export const ADD_PACKAGE = "ADD_PACKAGE";
 export const PACKAGE_ADDED = "PACKAGE_ADDED";
 export const FETCHED_DATA = "FETCHED_DATA";
+export const ERROR = "ERROR";
 
 export interface AddOrderAction{
     type: typeof ADD_ORDER
@@ -24,6 +25,9 @@ export interface PackageCreatedAction{
 export interface FetchedDataAction{
     type: typeof FETCHED_DATA;
 }
+export interface ErrorAction{
+    type: typeof ERROR,
+    payload: number;
+}
 
-
-export type OrderActions = AddOrderAction | AddedOrderAction | AddPackageAction | PackageCreatedAction | FetchedDataAction;
+export type OrderActions = AddOrderAction | AddedOrderAction | AddPackageAction | PackageCreatedAction | FetchedDataAction | ErrorAction;

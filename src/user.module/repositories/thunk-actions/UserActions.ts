@@ -6,6 +6,7 @@ import { ADD_USER, USER_ADDED, FETCHED_DATA } from "../../actions/UsersActions";
 import { IUserRepository } from "../IUserRepository";
 import UserShortModel from "../../models/UserShortModel";
 import { PaginationList } from "../../../shared/model/Pagination";
+import { ERROR } from "../../../core.module/actions/StepsAction";
 
 export const addUserAsync = (
     user: AddUser
@@ -19,7 +20,12 @@ export const addUserAsync = (
                         type: USER_ADDED,
                         payload: p.id
                     });
-         })
+         }).catch(async error=>{
+            await dispatch({
+              type: ERROR,
+              payload: error.errorCode            
+            })
+         });
   }
   
 export const fetchUserList = (

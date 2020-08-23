@@ -33,6 +33,7 @@ export function productionFlowReducer(state : ProductionFlow = initialState, act
         case ERROR_FLOW_ACTION:{
             return {
                 ...state,
+                isLoading:false,
                 errorCode: action.payload
             }
         }

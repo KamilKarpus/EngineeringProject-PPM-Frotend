@@ -4,7 +4,6 @@ import { ErrorMessages } from './ErrorMessage';
 import SideMenu from './components/sideMenu/SideMenu';
 import './ModuleApp.css'
 export const ModuleApp = () =>{
-    ErrorMessages.Initialize();
     return(
         <div className="flex-container">
             <div className="menu-left">
