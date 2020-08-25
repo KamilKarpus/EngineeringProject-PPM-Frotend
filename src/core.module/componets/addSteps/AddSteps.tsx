@@ -4,7 +4,6 @@ import { Button, Table, Alert } from 'reactstrap';
 import './AddSteps.css';
 import {  connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { AppState } from '../../reducers';
 import { AiOutlineArrowDown, AiOutlineArrowUp } from 'react-icons/ai';
 import { Step } from '../../models/StepView';
 import LoadingSpinner from '../../../shared/components/Spinner';
@@ -14,6 +13,7 @@ import { FlowView } from '../../models/FlowView';
 import { fetchFlow, changePositionAsync } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
+import { AppState } from '../../reducers';
 
 interface StateProps{
   isLoading: boolean;

@@ -5,6 +5,7 @@ import './stepList.css';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../reducers';
+
 export interface StepListElement{
     number: number;
     name: string;

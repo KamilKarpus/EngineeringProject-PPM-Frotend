@@ -7,7 +7,7 @@ import { ResponseId } from "../models/ResponseId";
 import { IUserRepository } from "./IUserRepository";
 
 export default class UserRepository implements IUserRepository{
-    private apiUrl : string = `${Environment.apiUrl}/users`;
+    private apiUrl : string = `${Environment.apiUrl}/api/users`;
     private httpClient : HttpClient
 
     constructor(httpClient : HttpClient) {

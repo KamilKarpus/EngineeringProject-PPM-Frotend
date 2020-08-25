@@ -6,9 +6,9 @@ import './coreModule.css';
 import StepList from './componets/stepList/StepsListComponent';
 import StepSummary from './componets/stepSummary/StepSummary';
 import { useSelector } from 'react-redux';
-import { AppState } from './reducers';
 import SideMenu from './componets/menu/MenuComponent';
 import FlowList from './componets/flowList/flowListComponent';
+import { AppState } from './reducers';
 
 const ModuleApp = () =>{
     const menu: number = useSelector((state: AppState) => state.menu);

@@ -9,7 +9,7 @@ import { AddPackage } from "../models/AddPackage";
 
 export class OrdersRepository{
 
-    private apiUrl : string = `${Environment.apiUrl}/orders`;
+    private apiUrl : string = `${Environment.apiUrl}/api/orders`;
     private httpClient : HttpClient = new HttpClient();
 
     async Add(order : AddOrder) : Promise<ResponseId>{

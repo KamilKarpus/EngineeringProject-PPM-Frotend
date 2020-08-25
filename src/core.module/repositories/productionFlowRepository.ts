@@ -9,7 +9,7 @@ import { PaginationList } from "../../shared/model/Pagination";
 import { FlowShortView } from "../models/FlowShortView";
 
 export class ProductionFlowRepository{
-    apiUrl : string = `${Environment.apiUrl}/administration`;
+    apiUrl : string = `${Environment.apiUrl}/api/administration`;
     httpClient : HttpClient = new HttpClient();
 
     async Add(flow : AddNewFlow): Promise<ResponseId> {

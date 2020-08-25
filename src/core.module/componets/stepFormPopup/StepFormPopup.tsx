@@ -11,11 +11,12 @@ import { useHistory } from 'react-router-dom';
 import LoadingSpinner from '../../../shared/components/Spinner';
 import { ErrorMessages } from '../../ErrorMessage';
 import { connect } from 'react-redux';
-import { AppState } from '../../reducers';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { addStepAsync } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
 import { fetchLocations } from '../../repositories/Thunk-Actions/LocationsThunk-Actions';
+import { AppState } from '../../reducers';
+
 
 interface StateProps{
     isLoading: boolean;

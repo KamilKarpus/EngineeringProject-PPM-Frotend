@@ -6,7 +6,7 @@ import { LocationView } from "../models/LocationView";
 import { PaginationList } from "../../shared/model/Pagination";
 
 export class LocationRepository{
-    private apiUrl : string = `${Environment.apiUrl}/locations`;
+    private apiUrl : string = `${Environment.apiUrl}/api/locations`;
     private httpClient : HttpClient = new HttpClient();
 
     async Add(location : AddNewLocation) : Promise<ResponseId>{

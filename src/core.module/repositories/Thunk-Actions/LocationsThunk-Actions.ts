@@ -1,8 +1,8 @@
 import { ThunkAction } from "redux-thunk";
 import { LocationView } from "../../models/LocationView";
-import { AppState } from "../../reducers";
 import { Action } from "redux";
 import { LocationsRepository } from "../LocationRepository";
+import { AppState } from "../../../ReduxConfiguration";
 
 
 export const fetchLocations = (

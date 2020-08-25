@@ -1,5 +1,4 @@
 import { ThunkAction } from "redux-thunk";
-import { AppState } from "../../reducers";
 import { Action } from "redux";
 import { ADD_STEP, STEP_ADDED, FETCH_NEEDED, ERROR, FETCH_FLOW, LOADING, STEP_MODIFIED_ERROR } from "../../actions/StepsAction";
 import { ProductionFlowRepository } from "../productionFlowRepository";
@@ -9,6 +8,7 @@ import { AddNewFlow } from "../../models/AddNewFlow";
 import { PaginationList } from "../../../shared/model/Pagination";
 import { FlowShortView } from "../../models/FlowShortView";
 import { ChangeStepPostion } from "../../models/ChangeStepPostion";
+import { AppState } from "../../../ReduxConfiguration";
 
 export const addStepAsync = (
     name: string, days: number, locationId: string, percentage: number, flowId : string

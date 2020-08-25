@@ -1,6 +1,5 @@
 import React, { useEffect }  from 'react';
 import './AddFlow.css';
-import { AppState } from '../../reducers';
 import { connect } from "react-redux";
 import { MOVED_TO_THE_NEXT_PAGE } from '../../actions/productionFlowActions';
 import { Button, Form, FormGroup, Label, Input, Alert } from 'reactstrap';
@@ -12,6 +11,7 @@ import { MENU_CHANGE } from '../../actions/moduleActions';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { addProductionFlowAsync } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
+import { AppState } from '../../reducers';
 
 interface StateProps{
   isLoading: boolean;

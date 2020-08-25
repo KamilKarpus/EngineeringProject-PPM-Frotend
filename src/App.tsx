@@ -7,10 +7,15 @@ import LocationModule from './location.module/LocationModule';
 import OrdersModule from './orders.module/OrdersModule';
 import AppNavbar from './shared/components/appNavBar/AppNavBar';
 import UsersModule from './user.module/UsersModule';
+import { Provider } from 'react-redux';
+import { configureStore } from './ReduxConfiguration';
 
+
+const store = configureStore();
 
 const App = () => {
   return (
+    <Provider store={store}>
     <Router>
       <AppNavbar/>
       <Route Route path="/flow" exact component={CoreModule} />
@@ -18,6 +23,7 @@ const App = () => {
       <Route Route path="/orders" exact component={OrdersModule}/>
       <Route Route path="/users" exact component={UsersModule}/>
     </Router>
+    </Provider>
   );
 };
 

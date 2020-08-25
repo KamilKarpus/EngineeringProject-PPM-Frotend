@@ -9,9 +9,9 @@ import { FlowView } from '../../models/FlowView';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchFlow, finishFlow } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
-import { AppState } from '../../reducers';
 import { STEP_CHANGE } from '../../actions/currentStepActions';
 import { connect } from 'react-redux';
+import { AppState } from '../../reducers';
 
 interface StateProps{
     isLoading: boolean;
