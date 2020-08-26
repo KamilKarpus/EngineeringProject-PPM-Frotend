@@ -9,6 +9,7 @@ import AppNavbar from './shared/components/appNavBar/AppNavBar';
 import UsersModule from './user.module/UsersModule';
 import { Provider } from 'react-redux';
 import { configureStore } from './ReduxConfiguration';
+import HomePage from './homePage/HomePage';
 
 
 const store = configureStore();
@@ -18,6 +19,7 @@ const App = () => {
     <Provider store={store}>
     <Router>
       <AppNavbar/>
+      <Route Route path="/" exact component={HomePage} />
       <Route Route path="/flow" exact component={CoreModule} />
       <Route Route path="/locations" exact component={LocationModule}/>
       <Route Route path="/orders" exact component={OrdersModule}/>

@@ -3,4 +3,5 @@ export interface AuthState{
     isLoading: boolean;
     userEmail: string;
     permissions: string[];
+    hasError: boolean;
 }

@@ -1,9 +1,10 @@
 import { AuthState } from "../AuthState";
 import { ThunkAction } from "redux-thunk";
 import { Action } from "redux";
-import { REQUEST_LOGIN, LOGGED_IN } from "../Actions";
+import { REQUEST_LOGIN, LOGGED_IN, ERROR } from "../Actions";
 import { AuthService } from "../../AuthService";
 import { TokenManager } from "../../TokenMenager";
+
 
 export const getCredientials = (
     userEmail: string, password: string
@@ -19,5 +20,9 @@ export const getCredientials = (
                 type: LOGGED_IN,
                 payload: manager.getUserData()
            });
+       }).catch(async err=>{
+           await dispatch({
+               type: ERROR
+           })
        })
   }

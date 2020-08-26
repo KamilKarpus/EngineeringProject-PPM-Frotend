@@ -11,6 +11,8 @@ import { useHistory } from 'react-router-dom';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchOrdersList } from '../repositories/thunk-actions/OrderActions-Thunk';
+import OrderList from '../componets/orderList/OrderList';
+import LoadingSpinner from '../../shared/components/Spinner';
 interface StateProps{
     fetchNeeded: boolean;
     isLoading: boolean;
@@ -20,21 +22,13 @@ interface DispatchProps{
 }
 
 type props = StateProps & DispatchProps;
-const initial : PaginationList<OrderShortView> ={
-    currentPage: 0,
-    totalPages: 0,
-    pageSize: 0,
-    totalCount: 0,
-    items: [],
-    hasPrevious: false,
-    hasNext: false,
-}
+
 
 const OrdersPage :React.FC<props> = (props) =>{
     const history = useHistory();
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
-    const   [orders, setOrderList] = React.useState<PaginationList<OrderShortView>>(initial);
+    const   [orders, setOrderList] = React.useState<PaginationList<OrderShortView>>();
     useEffect(()=>{
         props.getOrders(1, 10)
         .then(result => {
@@ -94,35 +88,15 @@ const OrdersPage :React.FC<props> = (props) =>{
             <SideMenu/>
         </div>
         <div className="content-container">
-            <div className="list">
-                <Table>
-                    <thead>
-                        <tr>
-                            <th>Nazwa Firmy</th>
-                            <th>Numer Zamówienia</th>
-                            <th>Opis</th>
-                        </tr>
-                    </thead>
-                    {orders?.items.map(order =>(
-                        <tr key={order.id} onClick={()=>{navigateToOrder(order.id)}}>
-                            <td scope="row">
-                                {order.companyName}
-                            </td>
-                            <td scope="row">
-                                {order.orderNumber}/{order.orderYear}
-                            </td>
-                            <td>
-                                {order.description}
-                            </td>
-                        </tr>
-                        
-                    ))}
-                </Table>
-                <div className="d-flex justify-content-center">
-                    <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={orders.totalCount}
-                    activePage = {orders.currentPage} paginations={pagination as number[]}  />
-                </div>
-            </div>
+        {
+        orders !== undefined ?
+        <OrderList list={orders as PaginationList<OrderShortView>}
+                       pagination = {pagination as number[]}
+                       loadNext = {loadNext}
+                       loadPrevious = {loadPrevious}
+                       loadPage = {loadPage}
+                       navigateToOrder={navigateToOrder} /> : <LoadingSpinner message="Trwa ładowanie listy zamówień..."/>
+        }
         </div>
         </div>    
     )

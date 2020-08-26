@@ -5,7 +5,8 @@ const initial : AuthState = {
     isLoading: false,
     userEmail: "",
     token: "",
-    permissions: []
+    permissions: [],
+    hasError: false
 }
 export function authReducer(state: AuthState = initial, action : AuthActions){
     const manager = new TokenManager();
@@ -18,6 +19,7 @@ export function authReducer(state: AuthState = initial, action : AuthActions){
            return {
                ...state,
                isLoading: true,
+               hasError: false
            }
        }
        case LOGGED_IN:{
@@ -33,6 +35,7 @@ export function authReducer(state: AuthState = initial, action : AuthActions){
            return{
                ...state,
                isLoading: false,
+               hasError: true,
            }
        }
        case LOGOUT:{

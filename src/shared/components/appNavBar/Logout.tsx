@@ -7,7 +7,7 @@ interface Props{
 
 const Logout : React.FC<Props> = (props) =>{
     return(
-        <div className="my-2 my-lg-0">
+        <div className="my-2 my-lg-0 text-light">
             {props.email} {' '}
             <Button color="link" className="my-2 my-sm-0" onClick={props.logout}>Wyloguj</Button>
         </div>

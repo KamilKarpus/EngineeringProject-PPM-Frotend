@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Label, Col, Input, FormFeedback } from 'reactstrap';
+import { Modal, Form, ModalHeader, ModalBody, ModalFooter, Button, FormGroup, Label, Col, Input, FormFeedback, Alert } from 'reactstrap';
 import LoadingSpinner from '../../shared/components/Spinner';
 import useValidation from '../../shared/forms/rules/useValidation';
 import { Field } from '../../shared/forms';
@@ -14,6 +14,7 @@ import { AppState } from '../../ReduxConfiguration';
 interface StateProps{
     isLoading : boolean;
     userEmail: string;
+    hasError: boolean;
 } 
 interface PropsToDispatch{
     getUserCredential(email: string, password: string) : void
@@ -93,6 +94,11 @@ const Login : React.FC<Props> = (props) =>{
                           </FormFeedback>
                     </Col>
                 </FormGroup>
+                { props.hasError &&
+                <Alert color="danger">
+                    Nieprawidłowy E-Mail lub Hasło.
+                </Alert>
+                }
                 </ModalBody>
                 <ModalFooter>
                 <Button color="primary">Zapisz</Button>{' '}
@@ -115,7 +121,8 @@ const mapDispatch = (
   const mapStateToProps = (store: AppState) => {
     return {
         isLoading: store.auth.isLoading,
-        userEmail: store.auth.userEmail
+        userEmail: store.auth.userEmail,
+        hasError: store.auth.hasError
     };
   };
   export default connect(

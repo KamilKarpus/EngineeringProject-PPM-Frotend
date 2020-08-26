@@ -1,4 +1,4 @@
-import { ADD_USER, USER_ADDED, UsersActions, FETCHED_DATA, ERROR } from "../actions/UsersActions";
+import { ADD_USER, USER_ADDED, UsersActions, FETCHED_DATA, ERROR, USER_CHANGE_PERMISSIONS, PERMISSION_CHANGED } from "../actions/UsersActions";
 import { UsersState } from "../types/User";
 
 
@@ -39,6 +39,18 @@ export function usersReducer(state: UsersState = initial, action : UsersActions)
                 fetchNeeded: false,
                 isLoding: false,
                 errorCode: action.payload
+            }
+        }
+        case USER_CHANGE_PERMISSIONS:{
+            return{
+                ...state,
+                isLoading: true
+            }
+        }
+        case PERMISSION_CHANGED:{
+            return{
+                ...state,
+                isLoading: false
             }
         }
         default:{

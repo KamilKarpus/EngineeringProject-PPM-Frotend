@@ -2,7 +2,8 @@ import React from 'react';
 import UserShortModel from '../../models/UserShortModel';
 import { PaginationList } from '../../../shared/model/Pagination';
 import PagePagination from '../../../shared/components/paginations/Pagination';
-import { Table } from 'reactstrap';
+import { Table, Button } from 'reactstrap';
+import { AiFillLock } from 'react-icons/ai';
 
 type Props = {
     list : PaginationList<UserShortModel>,
@@ -10,6 +11,7 @@ type Props = {
     loadPrevious() : void,
     loadNext() : void,
     pagination : number[],
+    editPermissions(id: string) : void;
 }
 
 const UserList = (props : Props) =>{
@@ -25,6 +27,7 @@ const UserList = (props : Props) =>{
                         <th>Imie i Nazwisko</th>
                         <th>Stanowisko</th>
                         <th>Data utworzenia konta</th>
+                        <td>Akcje</td>
                     </tr>
                 </thead>
                 {list?.items.map(user =>(
@@ -40,6 +43,9 @@ const UserList = (props : Props) =>{
                         </td>
                         <td>
                             {new Date(user.registrationDate).toLocaleDateString('pl-PL',options)}
+                        </td>
+                        <td>
+                            <Button color="secondary" onClick={()=>{props.editPermissions(user.id)}}><AiFillLock/></Button>
                         </td>
                     </tr>
 

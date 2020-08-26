@@ -5,6 +5,8 @@ import UserShortModel from "../models/UserShortModel";
 import { AddUser } from "../models/AddUserModule";
 import { ResponseId } from "../models/ResponseId";
 import { IUserRepository } from "./IUserRepository";
+import { UserView } from "../models/UserView";
+import { PermissionModel } from "../models/PermissionModel";
 
 export default class UserRepository implements IUserRepository{
     private apiUrl : string = `${Environment.apiUrl}/api/users`;
@@ -20,5 +22,11 @@ export default class UserRepository implements IUserRepository{
     async Add(user : AddUser) : Promise<ResponseId>{
         return this.httpClient.Post<AddUser, ResponseId>(this.apiUrl, user);
     } 
+    async GetUser(id: string) : Promise<UserView>{
+        return this.httpClient.Get<UserView>(this.apiUrl+`/`+id);
+    }
+    async UpdatePermissions(userId: string, permissions : PermissionModel) : Promise<void>{
+        return this.httpClient.Put<PermissionModel>(`${this.apiUrl}/${userId}/permissions`, permissions);
+    }
 } 
 

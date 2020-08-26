@@ -1,25 +1,17 @@
 import React, { useEffect } from 'react';
-import { Table } from 'reactstrap';
 import { PaginationList } from '../../shared/model/Pagination';
 import { LocationView } from '../models/LocationView';
-import { LocationRepository } from '../repositories/LocationRepository';
 import { isNullOrUndefined } from 'util';
-import PagePagination from '../../shared/components/paginations/Pagination';
 import './LocationPage.css';
 import { connect } from 'react-redux';
 import { AppState } from '../reducers';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchLocationList } from '../repositories/thunk-actions/LocationThunk-Action';
-const initial : PaginationList<LocationView> ={
-    currentPage: 0,
-    totalPages: 0,
-    pageSize: 0,
-    totalCount: 0,
-    items: [],
-    hasPrevious: false,
-    hasNext: false,
-}
+import LocationList from '../components/locationList/LocationList';
+import LoadingSpinner from '../../shared/components/Spinner';
+import SideMenu from '../components/sideMenu/SideMenu';
+
 interface StateProps{
     fetchNeeded: boolean;
 }
@@ -30,7 +22,7 @@ interface DispatchProps{
 type Props = DispatchProps & StateProps;
 
 const AddLocationPage : React.FC<Props>  = (props) =>{
-    const [locations, setLocations] = React.useState<PaginationList<LocationView>>(initial);
+    const [locations, setLocations] = React.useState<PaginationList<LocationView>>();
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
 
@@ -80,23 +72,20 @@ const AddLocationPage : React.FC<Props>  = (props) =>{
        loadPage(currentPage - 1);
    }
     return (
-        <div className="list">
-            <Table>
-                <thead>
-                {locations?.items.map(location =>(
-                    <tr key={location.name}>
-                        <td scope="row">
-                            {location.name}
-                        </td>
-                    </tr>
-                ))}
-                </thead>
-            </Table>
-            <div className="d-flex justify-content-center">
-                <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={locations.totalCount}
-                activePage = {locations.currentPage} paginations={pagination as number[]} />
-            </div>
+        <div className="flex-container">
+        <div className="menu-left">
+            <SideMenu/>
         </div>
+        <div className="content-container">
+            { locations !== undefined ?
+            <LocationList list={locations as PaginationList<LocationView>}
+            pagination = {pagination as number[]}
+            loadNext = {loadNext}
+            loadPrevious = {loadPrevious}
+            loadPage = {loadPage} /> : <LoadingSpinner message="Trwa ładowanie listy lokalizacji..."/> 
+            }
+        </div>
+    </div>
     );
 }
 const mapDispatch = (

@@ -10,6 +10,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { fetchUserList } from '../repositories/thunk-actions/UserActions';
 import { connect } from 'react-redux';
+import EditUserPermissions from '../components/editUserPermissions/EditUserPermissions';
 
 interface StateProps {
     isLoading : boolean;
@@ -25,7 +26,8 @@ type Props = DispatchProps & StateProps;
 
 
 const UsersPage = (props : Props) =>{
-
+    const [isOpen, setOpen] = React.useState(false);
+    const [userId, setUserId] = React.useState("");
     const [currentPage, setPage] = React.useState<number>(1);
     const [pagination, setPagination] = React.useState<number[]>();
     const [users, setUsers] = React.useState<PaginationList<UserShortModel>>();
@@ -37,6 +39,9 @@ const UsersPage = (props : Props) =>{
             generatePagination(result);
         });
     },[]);
+
+    const closePopup = ()=> setOpen(false);
+    const openPopup = () => setOpen(true); 
 
     useEffect(()=>{
         if(props.fetchNeeded === true){
@@ -77,8 +82,17 @@ const UsersPage = (props : Props) =>{
     const loadPrevious = ()=>{
         loadPage(currentPage - 1);
     }
+    const editUserPermissions = (id: string) : void=>{
+        setUserId(id);
+        openPopup();
+    }
     return(
         <div className="flex-container">
+            {
+                isOpen && <EditUserPermissions isOpen={isOpen}
+                            closePopup = {closePopup} userId={userId}
+                            />
+            }
         <div className="menu-left">
             <SideMenu/>
         </div>
@@ -87,7 +101,8 @@ const UsersPage = (props : Props) =>{
                        pagination = {pagination as number[]}
                        loadNext = {loadNext}
                        loadPrevious = {loadPrevious}
-                       loadPage = {loadPage} /> : <LoadingSpinner message="Trwa ładowanie listy użytkowników..."/> }
+                       loadPage = {loadPage}
+                       editPermissions = {editUserPermissions} /> : <LoadingSpinner message="Trwa ładowanie listy użytkowników..."/> }
                     
         </div>    
     );

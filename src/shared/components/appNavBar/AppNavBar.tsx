@@ -23,7 +23,7 @@ const AppNavbar : React.FC<Props> = (props) => {
         {
           isOpen && <Login isOpen={isOpen} closePopup = {closePupup}/>
         }
-        <Navbar color="light" light>
+        <Navbar color="dark" dark>
           <NavbarBrand href="/">Strona główna</NavbarBrand>
         {!props.email && 
           <Button color="link" className="my-2 my-sm-0" onClick={openPopup }>Zaloguj</Button>
