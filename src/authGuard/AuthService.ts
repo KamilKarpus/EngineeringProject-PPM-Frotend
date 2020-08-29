@@ -1,5 +1,3 @@
-import { format } from "path";
-import { HttpClient } from "../shared/HttpClient";
 import { Environment } from "../environment";
 import { SuccessfulResponse, ErrorResponse } from "./AuthResponse";
 
@@ -7,11 +5,12 @@ export class AuthService{
     private url: string = Environment.apiUrl;
     public async getCredential(name: string, password: string) : Promise<SuccessfulResponse>{
         const formData = new URLSearchParams();
-        formData.append('grant_type', 'password');
+        formData.append('grant_type', Environment.grantType);
         formData.append('username', name);
         formData.append('password', password);
-        formData.append('client_id', 'ppm.WEB');
-        formData.append('client_secret', 'secret');
+        formData.append('client_id', Environment.clientId);
+        formData.append('client_secret', Environment.clientSecret);
+        formData.append('scope', Environment.scope);
 
         const result = await fetch(`${this.url}/connect/token`, {
             method: 'POST',

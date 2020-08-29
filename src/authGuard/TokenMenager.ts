@@ -20,8 +20,13 @@ export class TokenManager{
         const token = localStorage.getItem('token');
         return token ? token : "";
     }
-    saveToken(token: string) : void{
+    getRefreshToken() : string{
+        const refreshToken = localStorage.getItem('refreshToken');
+        return refreshToken ? refreshToken : "";
+    }
+    saveToken(token: string, refreshToken: string) : void{
         localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
     }
     clear() :void{
         localStorage.clear();

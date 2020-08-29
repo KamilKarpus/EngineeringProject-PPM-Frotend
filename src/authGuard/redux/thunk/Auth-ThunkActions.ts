@@ -15,7 +15,7 @@ export const getCredientials = (
        const service = new AuthService();
        const manager = new TokenManager();
        await service.getCredential(userEmail, password).then(async credential=>{
-           manager.saveToken(credential.access_token);
+           manager.saveToken(credential.access_token, credential.refresh_token);
            await dispatch({
                 type: LOGGED_IN,
                 payload: manager.getUserData()

@@ -1,9 +1,15 @@
 import React from 'react';
 import {Button, CardColumns } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
-
-
-const HomePage = () =>{
+import { connect } from 'react-redux';
+import { AppState } from '../ReduxConfiguration';
+import { hasBasename } from 'history/PathUtils';
+import { EditLocation, ManageUsers, EditFlow } from '../user.module/models/PermissionService';
+interface StateProps{
+    hasAccess(permission: string) : boolean;
+}
+type Props = StateProps;
+const HomePage : React.FC<Props> = (props) =>{
     const history = useHistory();
     const moveToPage = (path : string) : void =>{
         history.push(path);
@@ -19,6 +25,7 @@ const HomePage = () =>{
                     <Button onClick={()=>moveToPage("/orders")}>Idź do Zamówień</Button>
                 </div>
             </div>
+        {props.hasAccess(EditLocation) &&
         <div className="card text-white bg-secondary mb-3">
             <div className="card-header">Lokalizacje</div>
                 <div className="card-body">
@@ -27,6 +34,8 @@ const HomePage = () =>{
                 <Button color="primary" onClick={()=>moveToPage("/locations")}>Idź do lokalizacji</Button>
             </div>
         </div>
+        }
+        {props.hasAccess(ManageUsers) &&
         <div className="card text-white bg-info mb-3">
             <div className="card-header">Użytkownicy</div>
                 <div className="card-body">
@@ -35,6 +44,8 @@ const HomePage = () =>{
                     <Button onClick={()=>moveToPage("/users")}>Idź do Użytkowników</Button>
                 </div>
             </div>
+        }
+        {props.hasAccess(EditFlow) &&
         <div className="card text-white bg-dark mb-3">
             <div className="card-header">Administracja</div>
             <div className="card-body">
@@ -43,8 +54,22 @@ const HomePage = () =>{
                 <Button onClick={()=>moveToPage("/flow")}>Idź do Administracja</Button>
             </div>
         </div>
+    }
     </div>
     </div>
     )
 }
-export default HomePage;
+
+const mapStateToProps = (store: AppState) => {
+    
+    return {
+        hasAccess: (permission : string) : boolean=>{
+           const right = store.auth.permissions.find(p=> permission === p);
+           return right ? true : false;
+        }
+    };
+  };
+
+  export default connect(
+    mapStateToProps  
+  )(HomePage)

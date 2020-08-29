@@ -10,6 +10,9 @@ import UsersModule from './user.module/UsersModule';
 import { Provider } from 'react-redux';
 import { configureStore } from './ReduxConfiguration';
 import HomePage from './homePage/HomePage';
+import AuthRoute from './authGuard/AuthRouter';
+import { View, EditFlow, EditLocation, ManageUsers } from './user.module/models/PermissionService';
+import LoginPage from './loginPage/LoginPage';
 
 
 const store = configureStore();
@@ -19,11 +22,12 @@ const App = () => {
     <Provider store={store}>
     <Router>
       <AppNavbar/>
-      <Route Route path="/" exact component={HomePage} />
-      <Route Route path="/flow" exact component={CoreModule} />
-      <Route Route path="/locations" exact component={LocationModule}/>
-      <Route Route path="/orders" exact component={OrdersModule}/>
-      <Route Route path="/users" exact component={UsersModule}/>
+      <AuthRoute Route path="/" exact component={HomePage} permission={View}/>
+      <AuthRoute Route path="/flow" exact component={CoreModule} permission={EditFlow} />
+      <AuthRoute Route path="/locations" exact component={LocationModule} permission={EditLocation}/>
+      <AuthRoute Route path="/orders" exact component={OrdersModule} permission={View}/>
+      <AuthRoute Route path="/users" exact component={UsersModule} permission={ManageUsers}/>
+      <Route Route path="/login" exact component={LoginPage} />
     </Router>
     </Provider>
   );
