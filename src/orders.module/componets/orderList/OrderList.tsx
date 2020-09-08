@@ -22,6 +22,7 @@ const OrderList : React.FC<Props> =(props) =>{
                             <th>Opis</th>
                         </tr>
                     </thead>
+                    <tbody>
                     {props.list.items.map(order =>(
                         <tr key={order.id} onClick={()=>{props.navigateToOrder(order.id)}}>
                             <td scope="row">
@@ -36,6 +37,7 @@ const OrderList : React.FC<Props> =(props) =>{
                         </tr>
                         
                     ))}
+                    </tbody>
                 </Table>
                 <div className="d-flex justify-content-center">
                     <PagePagination loadPage={props.loadPage} loadPrevious={props.loadPrevious} loadNext={props.loadNext} totalPage={props.list.totalCount}

@@ -3,11 +3,12 @@ import { Action } from "redux";
 import { AppState } from "../../reducers";
 import { ThunkAction } from "redux-thunk";
 import { OrdersRepository } from "../OrdersRepository";
-import { ADD_ORDER, ORDER_ADDED, FETCHED_DATA, ADD_PACKAGE, PACKAGE_ADDED } from "../../actions/OrderActions";
+import { ADD_ORDER, ORDER_ADDED, FETCHED_DATA, ADD_PACKAGE, PACKAGE_ADDED, FETCHED_ORDER, FETCH_DATA, PRINTING_NOTIFICATION } from "../../actions/OrderActions";
 import { OrderShortView } from "../../models/OrderShortView";
 import { PaginationList } from "../../../shared/model/Pagination";
-import { OrderView } from "../../models/OrderView";
 import { AddPackage } from "../../models/AddPackage";
+import { HubClient } from "../../../shared/HubClient";
+import { PrintingDTo } from "../../models/PrintingDTO";
 
 
 export const addOrderAsync = (
@@ -38,11 +39,21 @@ export const fetchOrdersList = (
 
 export const fetchOrder = (
         orderId: string
-    ) : ThunkAction<Promise<OrderView>, AppState, unknown, Action<any>> => async (dispatch, getState) : Promise<OrderView> =>{
+    ) : ThunkAction<void, AppState, unknown, Action<any>> => async (dispatch, getState) =>{
             const repository = new OrdersRepository();    
+            await dispatch(
+                {
+                    type: FETCH_DATA
+                }
+            );
             const result = await repository.GetOrder(orderId);
-            dispatch({type : FETCHED_DATA});
-            return result;
+            dispatch(
+                {
+                    type : FETCHED_ORDER,
+                    payload: result
+                }
+            );
+
     }
 
 export const addPackageAsync = (
@@ -60,4 +71,15 @@ export const addPackageAsync = (
             })
         };
 
-   
+export const subscribeToResource = (
+    orderId: string
+) : ThunkAction<void, AppState, unknown, Action<any>> => async (dispatch) => {
+        const client = new HubClient("printingHub");
+        client.subscribe<PrintingDTo>('printingStatus', (data)=>{
+            dispatch({
+                type: PRINTING_NOTIFICATION,
+                payload: data
+            });
+          });
+        client.joinGroup(orderId);
+    };

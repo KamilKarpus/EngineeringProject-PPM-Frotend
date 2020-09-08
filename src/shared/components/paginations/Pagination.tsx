@@ -20,7 +20,7 @@ const PagePagination : React.FC<Props> = (props : Props) =>{
                 <PaginationLink previous onClick={()=>{props.loadPrevious()}} />
             </PaginationItem>
             {props.paginations?.map(p=>(
-                <PaginationItem active={p === props.activePage}>
+                <PaginationItem key={p} active={p === props.activePage}>
                     <PaginationLink onClick={()=>{props.loadPage(p);}}>
                             {p}
                     </PaginationLink>

@@ -1,3 +1,4 @@
+import { OrderView } from "../models/OrderView";
 
 
 export interface OrderState{
@@ -5,4 +6,5 @@ export interface OrderState{
     fetchNeeded : boolean,
     loadingMessage: string;
     errorCode: number;
+    orderView : OrderView;
 }

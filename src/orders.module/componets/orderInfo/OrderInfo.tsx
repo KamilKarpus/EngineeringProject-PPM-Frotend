@@ -1,10 +1,11 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Container, Row, Col, Table, Progress } from 'reactstrap';
 import { OrderView } from '../../models/OrderView';
-import OrderInfoPage from '../../page/orderInfo/OrderInfoPage';
 import StatusSelector from './StatusSelector';
+import { AiOutlineDownload, AiOutlineQrcode } from 'react-icons/ai';
 type Props = {
-    order: OrderView
+    order: OrderView,
+    requestPrinting(packageId: string) : void
 }
 
 const OrderInfo = (props : Props) =>{
@@ -48,8 +49,10 @@ const OrderInfo = (props : Props) =>{
                         <th>Wysokosć [m]</th>
                         <th>Szerokosć [m]</th>
                         <th>Waga [kg]</th>
+                        <th>Akcje</th>
                     </tr>
                 </thead>
+                <tbody>
                 {order?.packages.map(p =>(
                     <tr key={p.packageId} >
                         <td scope="row">
@@ -70,9 +73,14 @@ const OrderInfo = (props : Props) =>{
                         <td>
                           {p.height}
                         </td>
+                        <th>
+                          {p.printingUrl ? <a href={p.printingUrl} target="_blank" download><AiOutlineDownload/></a> : <AiOutlineQrcode onClick={()=>{
+                            props.requestPrinting(p.packageId) 
+                            }}/>}
+                        </th>
                     </tr>
-                    
                 ))}
+              </tbody>
             </Table>
     </div>
     );

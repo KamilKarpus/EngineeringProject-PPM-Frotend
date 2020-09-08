@@ -8,33 +8,31 @@ import { connect } from 'react-redux';
 import { AppState } from '../../reducers';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { fetchOrder } from '../../repositories/thunk-actions/OrderActions-Thunk';
+import { fetchOrder, subscribeToResource } from '../../repositories/thunk-actions/OrderActions-Thunk';
+import { requestPackagePrinting } from '../../repositories/thunk-actions/PrintingActions-Thunk';
 
 interface StateProps{
   fetchNeeded: boolean;
   isLoading: boolean;
+  orderView: OrderView;
 }
 interface DispatchProps{
-  getOrder(orderId: string) : Promise<OrderView>
+  getOrder(orderId: string) : void;
+  subscribeToResource(orderId :string) : void;
+  requestPrinting(packageId: string): void;
 }
 
 type props = StateProps & DispatchProps;
 
 const OrderInfoPage : React.FC<props> = (props) =>{
-    const [order, setOrder] = React.useState<OrderView>();
     const history = useHistory();
     useEffect(()=>{
-        props.getOrder(history.location.state.id)
-        .then(p=>{
-            setOrder(p);
-        })
+        props.subscribeToResource(history.location.state.id);
+        props.getOrder(history.location.state.id);
     },[]);
     useEffect(()=>{
       if(props.fetchNeeded === true){
-      props.getOrder(history.location.state.id)
-      .then(p=>{
-          setOrder(p);
-        })
+      props.getOrder(history.location.state.id);
       }
       },[props.fetchNeeded]);
     return( 
@@ -42,7 +40,7 @@ const OrderInfoPage : React.FC<props> = (props) =>{
         <div className="menu-left">
             <InfoSideMenu/>
         </div>
-        { order !== undefined ? <OrderInfo order={order as OrderView}/> : <LoadingSpinner message="Trwa ładowanie zamówienia..."/>  }
+        { !props.isLoading ? <OrderInfo order={props.orderView} requestPrinting={props.requestPrinting}/> : <LoadingSpinner message="Trwa ładowanie zamówienia..."/>  }
       </div>
 );
 }
@@ -52,13 +50,20 @@ const mapDispatch = (
   return{
       getOrder: (orderId : string) => (
           dispatch(fetchOrder(orderId))
+      ),
+      subscribeToResource: (orderId: string)=>(
+        dispatch(subscribeToResource(orderId))
+      ),
+      requestPrinting: (packageId: string)=>(
+        dispatch(requestPackagePrinting(packageId))
       )
   }
 }
 const mapStateToProps = (store: AppState) => {
   return {
       isLoading: store.orderState.isLoading,
-      fetchNeeded: store.orderState.fetchNeeded
+      fetchNeeded: store.orderState.fetchNeeded,
+      orderView: store.orderState.orderView
   };
 };
 export default connect(
