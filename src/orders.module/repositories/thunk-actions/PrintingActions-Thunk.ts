@@ -8,6 +8,5 @@ export const requestPackagePrinting = (
     packageId : string
   ): ThunkAction<void, AppState, unknown, Action<any>> => async () => {
     const repository = new PrintingRepository();
-    console.log('middleware' + packageId);
     await repository.Add(new RequestPrinting(packageId));
     };

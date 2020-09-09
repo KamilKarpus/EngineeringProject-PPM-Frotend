@@ -5,13 +5,13 @@ import { History, createBrowserHistory } from 'history';
 import { UsersState } from "../types/User";
 import { usersReducer } from "./UserReducer";
 import UserRepository from "../repositories/UserRepository";
-import { HttpClient } from "../../shared/HttpClient";
+import AuthClient from "../../shared/AuthClient";
 
 
 export const history = createBrowserHistory()
 
 
-const httpClient = new HttpClient();
+const httpClient = new AuthClient();
 const userRepository = new UserRepository(httpClient);
 
 export type AppState = {

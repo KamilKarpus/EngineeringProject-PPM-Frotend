@@ -7,12 +7,13 @@ import { ResponseId } from "../models/ResponseId";
 import { IUserRepository } from "./IUserRepository";
 import { UserView } from "../models/UserView";
 import { PermissionModel } from "../models/PermissionModel";
+import AuthClient from "../../shared/AuthClient";
 
 export default class UserRepository implements IUserRepository{
     private apiUrl : string = `${Environment.apiUrl}/api/users`;
-    private httpClient : HttpClient
+    private httpClient : AuthClient
 
-    constructor(httpClient : HttpClient) {
+    constructor(httpClient : AuthClient) {
         this.httpClient = httpClient;
     }
 

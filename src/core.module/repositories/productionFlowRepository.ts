@@ -1,5 +1,4 @@
 import { ResponseId } from "../models/ResponseId";
-import { HttpClient } from "../../shared/HttpClient";
 import { AddNewStep } from "../models/AddNewStep";
 import { AddNewFlow } from "../models/AddNewFlow";
 import { FlowView } from "../models/FlowView";
@@ -7,10 +6,11 @@ import { ChangeStepPostion } from "../models/ChangeStepPostion";
 import { Environment } from "../../environment";
 import { PaginationList } from "../../shared/model/Pagination";
 import { FlowShortView } from "../models/FlowShortView";
+import AuthClient from "../../shared/AuthClient";
 
 export class ProductionFlowRepository{
     apiUrl : string = `${Environment.apiUrl}/api/administration`;
-    httpClient : HttpClient = new HttpClient();
+    httpClient : AuthClient = new AuthClient();
 
     async Add(flow : AddNewFlow): Promise<ResponseId> {
       return await this.httpClient.Post<AddNewFlow, ResponseId>(this.apiUrl, flow);

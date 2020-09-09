@@ -6,11 +6,12 @@ import { OrderShortView } from "../models/OrderShortView";
 import { PaginationList } from "../../shared/model/Pagination";
 import { OrderView } from "../models/OrderView";
 import { AddPackage } from "../models/AddPackage";
+import AuthClient from "../../shared/AuthClient";
 
 export class OrdersRepository{
 
     private apiUrl : string = `${Environment.apiUrl}/api/orders`;
-    private httpClient : HttpClient = new HttpClient();
+    private httpClient :AuthClient = new AuthClient();
 
     async Add(order : AddOrder) : Promise<ResponseId>{
         return this.httpClient.Post<AddOrder, ResponseId>(this.apiUrl, order);

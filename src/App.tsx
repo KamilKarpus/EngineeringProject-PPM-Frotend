@@ -14,7 +14,6 @@ import AuthRoute from './authGuard/AuthRouter';
 import { View, EditFlow, EditLocation, ManageUsers } from './user.module/models/PermissionService';
 import LoginPage from './loginPage/LoginPage';
 
-
 const store = configureStore();
 
 const App = () => {

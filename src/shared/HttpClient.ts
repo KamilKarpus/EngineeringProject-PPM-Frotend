@@ -1,5 +1,6 @@
 import { ErrorResponse } from "./ErrorResponse";
 import { TokenManager } from "../authGuard/TokenMenager";
+import { AuthService } from "../authGuard/AuthService";
 
 const POST = "POST";
 const GET = "GET";
@@ -7,7 +8,11 @@ const PUT = "PUT";
 const DELETE = "DELETE";
 
 export class HttpClient{
-    private tokenManager: TokenManager = new TokenManager();
+    private tokenManager: TokenManager;
+
+    constructor(){
+        this.tokenManager = new TokenManager();
+    }
     
     public async Post<Body, Response>(url : string, body : Body) : Promise<Response> {
         const result = await fetch(url, {
