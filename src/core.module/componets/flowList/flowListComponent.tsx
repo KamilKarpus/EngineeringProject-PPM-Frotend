@@ -10,6 +10,8 @@ import { connect } from 'react-redux';
 import { fetchFlows } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import { StatusSelector } from './StatusSelector';
+import { useHistory } from 'react-router-dom';
 
 
 interface DispatchProps{
@@ -30,6 +32,8 @@ const initial : PaginationList<FlowShortView> ={
 type Props = DispatchProps;
 
 const FlowList : React.FC<Props> = (props) =>{
+    const statusSelector = new StatusSelector();
+    const history = useHistory();
     const [flows, setFlows] = React.useState<PaginationList<FlowShortView>>(initial);
     const [pagination, setPagination] = React.useState<number[]>();
     const [currentPage, setPage] = React.useState<number>(1);
@@ -73,14 +77,29 @@ const FlowList : React.FC<Props> = (props) =>{
         <div className="wrapper">
             <Table>
                 <thead>
+                <tr>
+                    <th>Nazwa przepływu</th>
+                    <th>Prawidłowość budowy</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
                 {flows?.items.map(flow =>(
-                    <tr key={flow.name}>
+                    <tr key={flow.name} onClick={()=>{
+                        history.push(`/flowadd/${flow.id}/steps`, {id: flow.id});
+                    }}>
                         <td scope="row">
                             {flow.name}
                         </td>
+                        <td>
+                            {flow.isValid ? <p className="text-success">Prawidłowy</p> : <p className="text-danger">Nieprawidłowy</p>}
+                        </td>
+                        <td>
+                            {statusSelector.getMessage(flow.status)}
+                        </td>
                     </tr>
                 ))}
-                </thead>
+            </tbody>
             </Table>
             <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={flows.totalCount}
             activePage = {flows.currentPage} paginations={pagination as number[]} />
