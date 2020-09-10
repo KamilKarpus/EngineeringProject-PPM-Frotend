@@ -6,6 +6,7 @@ export class HubClient{
     private readonly _tokenManager: TokenManager;
     private readonly _connection : HubConnection;
     private readonly apiUrl : string;
+
     constructor(hubName: string){
         this.apiUrl = `${Environment.apiUrl}/${hubName}`;
         this._tokenManager = new TokenManager();
@@ -22,6 +23,9 @@ export class HubClient{
         .withUrl(apiUrl, {accessTokenFactory: () => this._tokenManager.getToken() })
         .withAutomaticReconnect();
         return builder;
+    }
+    public start() : void{
+        this._connection.start();
     }
     public joinGroup(group : string) : void{
     

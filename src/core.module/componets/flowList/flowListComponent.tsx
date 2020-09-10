@@ -7,45 +7,42 @@ import './flowListComponent.css';
 import { isNullOrUndefined } from 'util';
 import PagePagination from '../../../shared/components/paginations/Pagination';
 import { connect } from 'react-redux';
-import { fetchFlows } from '../../repositories/Thunk-Actions/StepsThunk-Actions';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { StatusSelector } from './StatusSelector';
 import { useHistory } from 'react-router-dom';
+import { fetchFlows, subscribeToResource } from '../../repositories/Thunk-Actions/FlowListThunk-Actions';
+import { AppState } from '../../reducers';
+import LoadingSpinner from '../../../shared/components/Spinner';
 
+
+interface StateProps{
+    flows: PaginationList<FlowShortView>;
+    isLoading: boolean;
+}
 
 interface DispatchProps{
     menuChange() : void;
-    getFlows(pageNumber : number, pageSize : number) : Promise<PaginationList<FlowShortView>>
+    getFlows(pageNumber : number, pageSize : number) : void;
+    subscribe() : void;
   
   }
 
-const initial : PaginationList<FlowShortView> ={
-    currentPage: 0,
-    totalPages: 0,
-    pageSize: 0,
-    totalCount: 0,
-    items: [],
-    hasPrevious: false,
-    hasNext: false,
-}
-type Props = DispatchProps;
+type Props = DispatchProps & StateProps;
 
 const FlowList : React.FC<Props> = (props) =>{
     const statusSelector = new StatusSelector();
     const history = useHistory();
-    const [flows, setFlows] = React.useState<PaginationList<FlowShortView>>(initial);
     const [pagination, setPagination] = React.useState<number[]>();
     const [currentPage, setPage] = React.useState<number>(1);
      useEffect(()=>{
+        props.subscribe();
         props.menuChange();
-        props.getFlows(1, 12)
-        .then(result => {
-            setFlows(result);
-            setPage(1);
-            generatePagination(result);
-        });
-    }, []);
+        props.getFlows(1, 12);
+    },[]);
+    useEffect(()=>{
+        generatePagination(props.flows);
+    }, [props.flows])
     const generatePagination = (result : PaginationList<FlowShortView>) => {
         let pagginationElements = [];
         if(!isNullOrUndefined(result)){
@@ -57,14 +54,9 @@ const FlowList : React.FC<Props> = (props) =>{
 
     }
     const loadPage = (page: number) =>{
-        if(page >= 1 && page <= flows!.totalPages) 
+        if(page >= 1 && page <= props.flows.totalPages) 
         {
         props.getFlows(page, 12)
-        .then(result => {
-            setFlows(result);
-            setPage(page);
-            generatePagination(result);
-        });
         }
     }
     const loadNext = ()=>{
@@ -75,6 +67,8 @@ const FlowList : React.FC<Props> = (props) =>{
     }
     return(
         <div className="wrapper">
+             {props.isLoading &&
+                <LoadingSpinner message="Trwa ładowanie listy przepływów.."/>}
             <Table>
                 <thead>
                 <tr>
@@ -84,7 +78,7 @@ const FlowList : React.FC<Props> = (props) =>{
                 </tr>
                 </thead>
                 <tbody>
-                {flows?.items.map(flow =>(
+                {props.flows.items.map(flow =>(
                     <tr key={flow.name} onClick={()=>{
                         history.push(`/flowadd/${flow.id}/steps`, {id: flow.id});
                     }}>
@@ -101,8 +95,8 @@ const FlowList : React.FC<Props> = (props) =>{
                 ))}
             </tbody>
             </Table>
-            <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={flows.totalCount}
-            activePage = {flows.currentPage} paginations={pagination as number[]} />
+            <PagePagination loadPage={loadPage} loadPrevious={loadPrevious} loadNext={loadNext} totalPage={props.flows.totalCount}
+            activePage = {props.flows.currentPage} paginations={pagination as number[]} />
         </div>
     );
 }
@@ -119,12 +113,23 @@ const mapDispatch = (
             payload: 2
         })
         ),
+        subscribe: () =>(
+            dispatch(subscribeToResource())
+        )
     }
   }
-  
+  const mapStateToProps = (store: AppState) => {
+    return {
+        
+        isLoading: store.flowsList.isLoading,
+        flows: store.flowsList.flows
+        
+
+    };
+  };
 
   export default connect(
-    null,
+    mapStateToProps,
     mapDispatch
   )(FlowList)
 

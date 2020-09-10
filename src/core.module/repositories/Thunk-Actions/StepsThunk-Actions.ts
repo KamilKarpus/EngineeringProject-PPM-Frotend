@@ -85,15 +85,6 @@ export const addProductionFlowAsync = (
     };
 
 
-export const fetchFlows= (
-        pageNumber : number, pageSize : number
-    ) : ThunkAction<Promise<PaginationList<FlowShortView>>, AppState, unknown, Action<any>> => async (dispatch) : Promise<PaginationList<FlowShortView>> =>{
-            const repository = new ProductionFlowRepository();    
-            const result = await repository.GetFlows(pageNumber, pageSize);
-            return result;
-    }
-
-
 
 export const changePositionAsync = (
         flowId : string, stepId: string, stepNumber: number

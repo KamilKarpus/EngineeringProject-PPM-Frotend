@@ -1,5 +1,4 @@
 import React from 'react';
-import { Component } from 'react';
 import {FaRegCircle } from 'react-icons/fa';
 import './stepList.css';
 import { AiFillCheckCircle } from 'react-icons/ai';

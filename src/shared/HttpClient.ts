@@ -13,7 +13,6 @@ export class HttpClient{
     constructor(){
         this.tokenManager = new TokenManager();
     }
-    
     public async Post<Body, Response>(url : string, body : Body) : Promise<Response> {
         const result = await fetch(url, {
             method: POST,
