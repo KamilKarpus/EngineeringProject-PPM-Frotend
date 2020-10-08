@@ -19,7 +19,7 @@ interface StateProps{
 }
 interface DispatchProps{
   addLocation(name: string, type: number, handleQR: boolean, description: string,
-    height: number, width: number, shortName: string) : void;
+    height: number, width: number, shortName: string, length : number) : void;
 }
 
 interface OwnProps {
@@ -36,7 +36,7 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
   const [printing, setPrinting] = React.useState(false);
   const [locationType, setLocationType] = React.useState(1);
   const [description, setDescription] = React.useState("");
-  
+  const [length, setLength] = React.useState<NumericField>(NumericField.initial);
   useEffect(()=>{
     if(props.fetchNeeded === true){
       props.closePopup();
@@ -65,6 +65,10 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
     e.preventDefault();
     setHeight(NumericField.create(e.target.value, "Wysokość lokalizacji musi być większa od 0!"))
   }
+  const updateLength = () => (e: React.ChangeEvent<HTMLInputElement>) =>{
+    e.preventDefault();
+    setLength(NumericField.create(e.target.value, "Długość lokalizacji musi być większa od 0!"))
+  }
   const updatePrinting = ()=>{
     setPrinting(!printing);
   }
@@ -76,7 +80,8 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
     setWidth(NumericField.createFromNumber(width.value,"Szerekość lokalizacji musi być większa od 0!"));
     setHeight(NumericField.createFromNumber(height.value, "Wysokość lokalizacji musi być większa od 0!"));
     if(locationName.valid() && locationShortName.valid() && height.valid() && width.valid()){
-        props.addLocation(locationName.value, locationType, printing, description, height.value, width.value,locationShortName.value);
+        props.addLocation(locationName.value, locationType, printing, description, height.value, width.value,locationShortName.value,
+          length.value);
       }
     }
     return (
@@ -136,6 +141,18 @@ const LocationEditComponent : React.FC<Props> = (props) =>{
         </Col>
       </FormGroup>
       <FormGroup row>
+        <Label for="length" sm={2}>Długość (metry)</Label>
+        <Col sm={10}>
+          <Input type="number" name="length" id="length"
+            value={length?.value} onChange={updateLength()} 
+            valid= {length.valid()} 
+            invalid={length.invalid()} />
+          <FormFeedback className="error_info"> 
+            {length.error}
+        </FormFeedback>
+        </Col>
+      </FormGroup>
+      <FormGroup row>
         <Label for="description" sm={2}>Opis</Label>
         <Col sm={10}>
           <Input type="textarea" name="description" id="description"
@@ -178,8 +195,8 @@ const mapDispatch = (
 )=> {
   return{
     addLocation: (name: string, type: number, handleQR: boolean, description: string,
-      height: number, width: number, shortName: string)  => (
-          dispatch(addLocation(name, type, handleQR, description, height, width, shortName))
+      height: number, width: number, shortName: string, length: number)  => (
+          dispatch(addLocation(name, type, handleQR, description, height, width, shortName, length))
       ),
   }
 }

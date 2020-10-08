@@ -1,7 +1,6 @@
 import { HttpClient } from "./HttpClient";
 import { AuthService } from "../authGuard/AuthService";
 import { TokenManager } from "../authGuard/TokenMenager";
-import { MOVED_TO_THE_NEXT_PAGE } from "../core.module/actions/productionFlowActions";
 
 export default class AuthClient{
     private readonly _httpClient: HttpClient;

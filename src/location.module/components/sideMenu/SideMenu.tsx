@@ -18,7 +18,7 @@ const SideMenu = () =>{
             }
     <ul>
         <li>
-            <Button color="link" onClick={openPopup}> <IoMdAddCircle/> Utwórz nowy krok</Button>
+            <Button color="link" onClick={openPopup}> <IoMdAddCircle/> Utwórz nową lokalizacje</Button>
         </li>
     </ul>
   </div>);

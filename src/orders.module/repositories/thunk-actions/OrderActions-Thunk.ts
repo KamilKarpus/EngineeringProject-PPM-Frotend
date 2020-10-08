@@ -57,13 +57,13 @@ export const fetchOrder = (
     }
 
 export const addPackageAsync = (
-        flowId: string,weight: number,height: number,width: number, orderId : string
+        flowId: string,weight: number,height: number,width: number, orderId : string, length: number
       ): ThunkAction<void, AppState, unknown, Action<any>> => async (dispatch, getState) => {
         const repository = new OrdersRepository();
         await dispatch({
             type: ADD_PACKAGE
         });
-        await repository.AddPackage(orderId, new AddPackage(flowId, weight, height, width))
+        await repository.AddPackage(orderId, new AddPackage(flowId, weight, height, width, length))
             .then(async p=>{
                 await dispatch({
                     type: PACKAGE_ADDED

@@ -5,5 +5,6 @@ export class AddNewLocation{
         public description: string,
         public height: number,
         public width: number,
-        public shortName: string){}
+        public shortName: string,
+        public length: number){}
 }

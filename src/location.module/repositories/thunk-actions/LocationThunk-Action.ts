@@ -9,13 +9,13 @@ import { PaginationList } from "../../../shared/model/Pagination";
 
 export const addLocation = (
     name: string, type: number, handleQR: boolean, description: string,
-        height: number, width: number, shortName: string
+        height: number, width: number, shortName: string, length : number
   ): ThunkAction<void, AppState, unknown, Action<any>> => async (dispatch) => {
     await dispatch({
         type: ADDING_LOCATION
     });
     const repository = new LocationRepository();
-    await repository.Add(new AddNewLocation(name, type, handleQR, description, height, width, shortName))
+    await repository.Add(new AddNewLocation(name, type, handleQR, description, height, width, shortName, length))
     .then(async result =>{
         await dispatch({
             type: LOCATION_ADDED,

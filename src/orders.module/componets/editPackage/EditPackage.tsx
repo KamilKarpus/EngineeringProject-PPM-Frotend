@@ -7,7 +7,7 @@ import { FlowField } from './fields/FlowField';
 import AutoComplete from './AutoComplete';
 import { FlowView } from '../../models/FlowView';
 import { NumericField } from './fields/NumericField';
-import { WidthMessage, HeightMessage, WeightMessage } from './ValidateMessages';
+import { WidthMessage, HeightMessage, WeightMessage, LengthMessage } from './ValidateMessages';
 import { useHistory } from 'react-router-dom';
 import { addPackageAsync } from '../../repositories/thunk-actions/OrderActions-Thunk';
 import { ThunkDispatch } from 'redux-thunk';
@@ -22,7 +22,8 @@ interface StateProps{
   getErrorMessage(code: number) : string;
 }
 interface DispatchProps{
-  addPackage(flowId: string,weight: number,height: number,width: number, orderId : string) : void;
+  addPackage(flowId: string,weight: number,height: number,width: number, orderId : string,
+    length : number) : void;
   getFlows(name: string) : Promise<FlowView[]>;
 }
 
@@ -38,6 +39,7 @@ const EditPackage : React.FC<Props> = (props)=>{
     const [height, setHeight] = React.useState<NumericField>(NumericField.initial);
     const [width, setWidth] = React.useState<NumericField>(NumericField.initial);
     const [weight, setWeight] = React.useState<NumericField>(NumericField.initial);
+    const [length, setLength] = React.useState<NumericField>(NumericField.initial);
 
     const updateFlowField = (locationView : FlowView) : void =>{
       const newField = FlowField.Create(locationView);
@@ -57,17 +59,21 @@ const EditPackage : React.FC<Props> = (props)=>{
       e.preventDefault();
       setWeight(NumericField.create(e.target.value, WeightMessage));
     }
-    
+    const updateLength = () => (e: React.ChangeEvent<HTMLInputElement>) =>{
+      e.preventDefault();
+      setLength(NumericField.create(e.target.value, LengthMessage));
+    }
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
       
         setWidth(NumericField.createFromNumber(width.value, WidthMessage));
         setHeight(NumericField.createFromNumber(height.value, HeightMessage));
         setWeight(NumericField.createFromNumber(weight.value, WeightMessage));
+        setLength(NumericField.createFromNumber(length.value, LengthMessage));
         setFlow(FlowField.Create(flow.value));
         if(width.valid() && height.valid() && width.valid() && flow.valid()){
           props.addPackage(flow.value.id, weight.value, height.value,
-            width.value, history.location.state.id);
+            width.value, history.location.state.id, length.value);
         }
       }
     
@@ -114,6 +120,19 @@ const EditPackage : React.FC<Props> = (props)=>{
                     
                 </FormGroup>
                 <FormGroup row>
+                    <Label for="length" sm={2}>Długość [m]</Label>
+                    <Col sm={10}>
+                      <Input type="number" name="length" id="lengthId"
+                          value={length?.value} onChange={updateLength()} 
+                          valid= {length.valid()} 
+                          invalid={length.invalid()} />
+                          <FormFeedback className="error_info"> 
+                            {length.error}
+                          </FormFeedback>
+                    </Col>
+                    
+                </FormGroup>
+                <FormGroup row>
                     <Label for="weight" sm={2}>Waga [kg]</Label>
                     <Col sm={10}>
                       <Input type="number" name="weight" id="weight"
@@ -153,8 +172,8 @@ const mapDispatch = (
   dispatch: ThunkDispatch<any, any, AnyAction>
 )=> {
   return{
-    addPackage: (flowId: string,weight: number,height: number,width: number, orderId : string)  => (
-          dispatch(addPackageAsync(flowId, weight, height, width, orderId))
+    addPackage: (flowId: string,weight: number,height: number,width: number, orderId : string, length: number)  => (
+          dispatch(addPackageAsync(flowId, weight, height, width, orderId, length))
       ),
     getFlows: (name: string) =>(
       dispatch(fetchFlows(name))

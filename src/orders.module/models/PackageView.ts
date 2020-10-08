@@ -7,6 +7,7 @@ export interface PackageView {
     width: number;
     number: number;
     progress: number;
+    length : number;
     printingUrl: string;
 }
 

@@ -3,7 +3,8 @@ export class AddPackage {
         public flowId: string,
         public weight: number,
         public height: number,
-        public width: number
+        public width: number,
+        public length: number
     )
     {}
 }

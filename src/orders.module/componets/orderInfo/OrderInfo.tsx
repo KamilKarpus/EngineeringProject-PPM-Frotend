@@ -49,6 +49,7 @@ const OrderInfo = (props : Props) =>{
                         <th>Wysokosć [m]</th>
                         <th>Szerokosć [m]</th>
                         <th>Waga [kg]</th>
+                        <th>Długość [m]</th>
                         <th>Akcje</th>
                     </tr>
                 </thead>
@@ -72,6 +73,9 @@ const OrderInfo = (props : Props) =>{
                         </td>
                         <td>
                           {p.height}
+                        </td>
+                        <td>
+                          {p.length}
                         </td>
                         <th>
                           {p.printingUrl ? <a href={p.printingUrl} target="_blank" download><AiOutlineDownload/></a> : <AiOutlineQrcode onClick={()=>{
