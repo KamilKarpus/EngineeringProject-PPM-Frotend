@@ -3,12 +3,13 @@ import { Action } from "redux";
 import { AppState } from "../../reducers";
 import { ThunkAction } from "redux-thunk";
 import { OrdersRepository } from "../OrdersRepository";
-import { ADD_ORDER, ORDER_ADDED, FETCHED_DATA, ADD_PACKAGE, PACKAGE_ADDED, FETCHED_ORDER, FETCH_DATA, PRINTING_NOTIFICATION } from "../../actions/OrderActions";
+import { ADD_ORDER, ORDER_ADDED, FETCHED_DATA, ADD_PACKAGE, PACKAGE_ADDED, FETCHED_ORDER, FETCH_DATA, PRINTING_NOTIFICATION, PACKAGE_PROGRESS_NOTIFCATION } from "../../actions/OrderActions";
 import { OrderShortView } from "../../models/OrderShortView";
 import { PaginationList } from "../../../shared/model/Pagination";
 import { AddPackage } from "../../models/AddPackage";
 import { HubClient } from "../../../shared/HubClient";
 import { PrintingDTo } from "../../models/PrintingDTO";
+import { PackageProgresseDTO } from "../../models/PackageProgressDtos";
 
 
 export const addOrderAsync = (
@@ -83,3 +84,17 @@ export const subscribeToResource = (
           });
         client.joinGroup(orderId);
     };
+
+
+    export const subscribeToOrdersResource = (
+        orderId: string
+    ) : ThunkAction<void, AppState, unknown, Action<any>> => async (dispatch) => {
+            const client = new HubClient("ordershub");
+            client.subscribe<PackageProgresseDTO>('ordersStatus', (data)=>{
+                dispatch({
+                    type: PACKAGE_PROGRESS_NOTIFCATION,
+                    payload: data
+                });
+              });
+            client.joinGroup(orderId);
+        };

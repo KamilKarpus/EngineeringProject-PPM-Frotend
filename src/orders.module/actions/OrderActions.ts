@@ -1,4 +1,5 @@
 import { OrderView } from "../models/OrderView";
+import { PackageProgresseDTO } from "../models/PackageProgressDtos";
 import { PrintingDTo } from "../models/PrintingDTO";
 
 export const ADD_ORDER = "ADD_ORDER";
@@ -10,6 +11,7 @@ export const ERROR = "ERROR";
 export const FETCH_DATA = "FETCH_DATA";
 export const FETCHED_ORDER = "FETCHED_ORDER";
 export const PRINTING_NOTIFICATION = "PRINTING_NOTIFICATION";
+export const PACKAGE_PROGRESS_NOTIFCATION = "PACKAGE_PROGRESS_NOTIFCATION";
 
 export interface AddOrderAction{
     type: typeof ADD_ORDER
@@ -47,6 +49,12 @@ export interface PrintingNotificationAction{
     payload: PrintingDTo
 }
 
+export interface PackageProgressAction{
+    type: typeof PACKAGE_PROGRESS_NOTIFCATION,
+    payload: PackageProgresseDTO
+}
+
 export type OrderActions = AddOrderAction | AddedOrderAction 
         | AddPackageAction | PackageCreatedAction | FetchedDataAction
-         | ErrorAction | FetchedOrderView | FetchData | PrintingNotificationAction;
+         | ErrorAction | FetchedOrderView | FetchData | PrintingNotificationAction
+         | PackageProgressAction;

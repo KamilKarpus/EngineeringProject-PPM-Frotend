@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { AppState } from '../../reducers';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { fetchOrder, subscribeToResource } from '../../repositories/thunk-actions/OrderActions-Thunk';
+import { fetchOrder, subscribeToOrdersResource, subscribeToResource } from '../../repositories/thunk-actions/OrderActions-Thunk';
 import { requestPackagePrinting } from '../../repositories/thunk-actions/PrintingActions-Thunk';
 
 interface StateProps{
@@ -20,6 +20,7 @@ interface DispatchProps{
   getOrder(orderId: string) : void;
   subscribeToResource(orderId :string) : void;
   requestPrinting(packageId: string): void;
+  subscribeToPackageResource(orderId: string) : void;
 }
 
 type props = StateProps & DispatchProps;
@@ -29,6 +30,7 @@ const OrderInfoPage : React.FC<props> = (props) =>{
     useEffect(()=>{
         props.subscribeToResource(history.location.state.id);
         props.getOrder(history.location.state.id);
+        props.subscribeToPackageResource(history.location.state.id);
     },[]);
     useEffect(()=>{
       if(props.fetchNeeded === true){
@@ -56,6 +58,9 @@ const mapDispatch = (
       ),
       requestPrinting: (packageId: string)=>(
         dispatch(requestPackagePrinting(packageId))
+      ),
+      subscribeToPackageResource :(orderId : string)=>(
+        dispatch(subscribeToOrdersResource(orderId))
       )
   }
 }

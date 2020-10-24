@@ -1,4 +1,4 @@
-import { OrderActions, ADD_ORDER, ORDER_ADDED, ADD_PACKAGE, PACKAGE_ADDED, ERROR, FETCHED_ORDER, FETCH_DATA, PRINTING_NOTIFICATION } from "../actions/OrderActions";
+import { OrderActions, ADD_ORDER, ORDER_ADDED, ADD_PACKAGE, PACKAGE_ADDED, ERROR, FETCHED_ORDER, FETCH_DATA, PRINTING_NOTIFICATION, PACKAGE_PROGRESS_NOTIFCATION } from "../actions/OrderActions";
 import { OrderState } from "../types/Order";
 import { FaTruckMonster } from "react-icons/fa";
 const initial = {
@@ -79,6 +79,17 @@ export function orderReducer(state: OrderState = initial, action : OrderActions)
             return{
                 ...state,
                 orderView: newView
+            }
+        }
+        case PACKAGE_PROGRESS_NOTIFCATION:{
+            let packageIndex = state.orderView.packages.findIndex(p=>p.packageId === action.payload.packageId);
+            let newView = {...state.orderView};
+            if(packageIndex > 0){
+                newView.packages[packageIndex].progress = action.payload.progress;
+            }
+            return{
+                ...state,
+                orderView : newView
             }
         }
         default:{

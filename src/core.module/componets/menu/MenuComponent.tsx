@@ -10,10 +10,10 @@ const SideMenu = () =>{
         
     }
     return (
-        <div className="container h-100">
+        <div className="container">
         <ul>
             <li>
-                <Button color="link" onClick={()=>moveToPage()}> <IoMdAddCircle/> Utwórz nowy krok</Button>
+                <Button color="link" onClick={()=>moveToPage()}> <IoMdAddCircle/> Utwórz nowy proces</Button>
             </li>
         </ul>
       </div>
